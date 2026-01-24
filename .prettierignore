@@ -1,0 +1,22 @@
+# Node
+node_modules
+npm-debug.log
+yarn-debug.log
+yarn-error.log
+pnpm-debug.log
+
+# Build outputs
+build
+
+# Logs
+*.log
+
+# Editor files
+.vscode
+
+# Generated files
+*.d.ts
+*.lock
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
