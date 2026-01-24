@@ -1,10 +1,4 @@
-function isPlainObject(value: any): value is Record<string, any> {
-    return (
-        typeof value === 'object' &&
-        value !== null &&
-        !Array.isArray(value)
-    );
-}
+import { isPlainObject } from './isPlainObject';
 
 export function mergeObjects<T>(
     objA: Record<string, any>,
@@ -19,5 +13,5 @@ export function mergeObjects<T>(
         else result[key] = valueB;
     }
 
-    return result;
+    return result as T;
 }

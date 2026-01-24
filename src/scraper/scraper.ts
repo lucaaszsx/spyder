@@ -1,9 +1,11 @@
-import { HttpClientOptions, ScraperOptions } from '../types';
 import { defaultOptions, mergeObjects } from '../utils';
 import { EventEmitter } from 'node:events';
+import { ScraperOptions } from '../types';
+import { Events } from '../constants';
+import { HttpClient } from '../http';
 
 export class Scraper extends EventEmitter {
-    private httpClient: HttpClientOptions;
+    private httpClient: HttpClient;
     private debug: boolean;
 
     constructor(options: ScraperOptions = defaultOptions) {
@@ -11,12 +13,13 @@ export class Scraper extends EventEmitter {
 
         options = mergeObjects<ScraperOptions>(defaultOptions, options);
 
-        this.httpClient = options.httpClient;
+        this.httpClient = new HttpClient(options.httpClient);
         this.debug = !!options.debug;
 
-        const { backoff } = this.httpClient;
-
-        if (backoff.maxAttempts < 1) backoff.maxAttempts = 1;
+        if (this.debug)
+            this.on(Events.Debug, function(message) {
+                // todo: log message
+            });
     }
 
 

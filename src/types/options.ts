@@ -9,7 +9,7 @@ export type BackOffOptions = {
     startingDelay: number,
     baseMultiplier: number
     retry: (error: any, attempt: number) => boolean | Promise<Boolean>,
-};
+};  
 
 export type UAConfigOptions =
     | {

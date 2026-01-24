@@ -1,30 +1,47 @@
-import { HttpClientOptions } from '../types';
+import {
+    HttpClientOptions,
+    UAConfigOptions,
+    BackOffOptions
+} from '../types';
+import { doRetriesWithBackOff, isPlainObject } from '../utils';
 import { UserAgentRotator } from './userAgent';
 
 export class HttpClient {
-    private options: HttpClientOptions;
+    private timeout: number;
+    private headers: Record<string, string>;
+    private uaConfig: UAConfigOptions;
+    private backoff: BackOffOptions;
     private uaRotator: UserAgentRotator | null = null;
 
     constructor(options: HttpClientOptions) {
-        this.options = options;
+        const { timeout, headers, uaConfig, backoff } = options;
 
-        if (this.rotateUA) this.uaRotator = new UserAgentRotator(options.uaConfig.uaList);
-    }
+        if (isNaN(timeout) || timeout < 0) throw new Error(
+            'Option \'timeout\' of HttpClient must be a number greater than 0. Received: ' +
+            timeout
+        );
 
-    get rotateUA(): boolean {
-        return this.options.uaConfig.rotate;
+        if (
+            !isPlainObject(headers) ||
+            Object.values(headers).some((header) => typeof header !== 'string')
+        ) throw new Error('Option \'headers\' must be a plain object with string values');
+         
+        this.timeout = timeout;
+        this.headers = headers;
+        this.uaConfig = uaConfig;
+        this.backoff = backoff;
+
+        if (uaConfig.rotate) this.uaRotator = new UserAgentRotator(uaConfig.uaList);
     }
 
     get currentUA() {
-        const userAgent = this.rotateUA
-            ? this.uaRotator?.next()
-            : this.options.uaConfig.ua;
+        if (this.uaConfig.rotate) return this.uaRotator?.next() ?? '';
 
-        return userAgent || '';
+        return this.uaConfig.ua;
     }
 
     async get(url: string) {
-        return ; // todo
+        
     }
 
     private async request(url: string) {

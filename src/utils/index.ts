@@ -1,3 +1,3 @@
 export { doRetriesWithBackOff } from './doRetriesWithBackOff';
-export { defaultOptions } from './defaultOptions';
+export { isPlainObject } from './isPlainObject';
 export { mergeObjects } from './mergeObjects';

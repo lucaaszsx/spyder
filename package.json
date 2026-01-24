@@ -1,27 +1,71 @@
 {
-  "name": "scraper-schema",
-  "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "packageManager": "pnpm@10.28.0",
-  "devDependencies": {
-    "@eslint/js": "^9.39.2",
-    "@types/node": "^25.0.10",
-    "@typescript-eslint/eslint-plugin": "^8.53.1",
-    "@typescript-eslint/parser": "^8.53.1",
-    "eslint": "^9.39.2",
-    "eslint-config-prettier": "^10.1.8",
-    "eslint-plugin-only-warn": "^1.1.0",
-    "globals": "^17.1.0",
-    "typescript": "^5.9.3"
-  },
-  "dependencies": {
-    "undici": "^7.19.0"
-  }
+    "$schema": "https://json.schemastore.org/package.json",
+    "name": "webcrap",
+    "description": "A schema-based web scraping toolkit for fast and structured data extraction.",
+    "private": false,
+    "main": "./dist/index.js",
+    "types": "./dist/",
+    "exports": {
+        ".": {
+            "import": {
+                "types": "./typings/index.d.mts",
+                "default": "./src/index.js"
+            },
+            "require": {
+                "types": "./typings/index.d.ts",
+                "default": "./src/index.js"
+            }
+        }
+    },
+    "files": ["dist"],
+    "keywords": [
+        "web-scraping",
+        "http-client",
+        "scraper",
+        "crawler",
+        "parsing",
+        "cheerio",
+        "html",
+        "xml"
+    ],
+    "license": "MIT",
+    "contributors": [
+        {
+            "email": "jlucasmelob558@gmail.com",
+            "name": "Lucas",
+            "url": "https://github.com/lucaaszsx"
+        }
+    ],
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/lucaaszsx/webcrap.git"
+    },
+    "bugs": {
+        "url": "https://github.com/lucaaszsx/webcrap/issues"
+    },
+    "homepage": "https://github.com/lucaaszsx/webcrap#README",
+    "scripts": {
+        "build": "tsc -p tsconfig.json",
+        "clean": "rimraf dist",
+        "lint": "eslint . --ext .ts,.tsx --ignore-path .gitignore",
+        "format": "prettier --write '**/*.{ts,tsx,json,md}'",
+        "format:check": "prettier --check '**/*.{ts,tsx,json,md}'",
+        "type-check": "tsc --noEmit",
+        "check": "pnpm run type-check && pnpm run lint && pnpm run format:check"
+    },
+    "packageManager": "pnpm@10.28.0",
+    "dependencies": {
+        "undici": "^7.19.0"
+    },
+    "devDependencies": {
+        "@eslint/js": "^9.39.2",
+        "@types/node": "^25.0.10",
+        "@typescript-eslint/eslint-plugin": "^8.53.1",
+        "@typescript-eslint/parser": "^8.53.1",
+        "eslint": "^9.39.2",
+        "eslint-config-prettier": "^10.1.8",
+        "eslint-plugin-only-warn": "^1.1.0",
+        "globals": "^17.1.0",
+        "typescript": "^5.9.3"
+    }
 }
