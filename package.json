@@ -60,6 +60,7 @@
     },
     "packageManager": "pnpm@11.2.2",
     "dependencies": {
+        "cheerio": "^1.2.0",
         "undici": "^7.19.0"
     },
     "devDependencies": {
