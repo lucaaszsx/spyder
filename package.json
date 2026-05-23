@@ -46,14 +46,16 @@
     "homepage": "https://github.com/lucaaszsx/webcrap#README",
     "scripts": {
         "clean": "rimraf dist",
-        "lint": "eslint . --ext .ts,.tsx --ignore-path .gitignore",
-        "format": "prettier --write '**/*.{ts,tsx,json,md}'",
-        "format:check": "prettier --check '**/*.{ts,tsx,json,md}'",
         "prebuild": "pnpm run check",
         "build": "tsup",
         "build:only": "tsup --no-clean",
         "type-check": "tsc --noEmit",
-        "check": "pnpm run type-check && pnpm run lint && pnpm run format:check"
+        "lint": "eslint .",
+        "lint:fix": "eslint . --fix",
+        "format:check": "prettier --check .",
+        "format:write": "prettier --write .",
+        "check": "pnpm run type-check && pnpm run lint && pnpm run format:check",
+        "fix": "pnpm lint:fix && pnpm format:write"
     },
     "packageManager": "pnpm@11.2.2",
     "dependencies": {
@@ -68,6 +70,7 @@
         "eslint-config-prettier": "^10.1.8",
         "eslint-plugin-only-warn": "^1.1.0",
         "globals": "^17.1.0",
+        "prettier": "^3.8.3",
         "rimraf": "^6.0.1",
         "tsup": "^8.5.1",
         "tsx": "^4.22.3",

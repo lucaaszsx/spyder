@@ -5,10 +5,10 @@ import prettier from 'eslint-config-prettier';
 import globals from 'globals';
 import js from '@eslint/js';
 
-export const config = [
+export default [
     js.configs.recommended,
 
-    prettier.flat,
+    prettier,
 
     {
         languageOptions: {
@@ -30,10 +30,7 @@ export const config = [
             '@typescript-eslint': tsPlugin
         },
         rules: {
-            '@typescript-eslint/no-unused-vars': [
-                'warn',
-                { argsIgnorePattern: '^_' }
-            ],
+            '@typescript-eslint/no-unused-vars': ['warn', { argsIgnorePattern: '^_' }],
             '@typescript-eslint/no-explicit-any': 'warn',
             '@typescript-eslint/explicit-module-boundary-types': 'off'
         }
