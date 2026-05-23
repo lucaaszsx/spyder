@@ -49,6 +49,7 @@
         "prebuild": "pnpm run check",
         "build": "tsup",
         "build:only": "tsup --no-clean",
+        "playground": "tsx scripts/playground.ts",
         "type-check": "tsc --noEmit",
         "lint": "eslint .",
         "lint:fix": "eslint . --fix",
@@ -63,6 +64,7 @@
     },
     "devDependencies": {
         "@eslint/js": "^9.39.2",
+        "@inquirer/prompts": "^8.4.3",
         "@types/node": "^25.0.10",
         "@typescript-eslint/eslint-plugin": "^8.53.1",
         "@typescript-eslint/parser": "^8.53.1",
