@@ -16,22 +16,22 @@ import { isPlainObject } from '../utils';
 import { HttpError } from './HttpError';
 import { ProxyAgent } from 'undici';
 
-export class HttpClient<Meta> {
-    private timeout: number;
-    private headers: Record<string, string>;
-    private backoff: BackOffOptions;
-    private dispatcher: ProxyAgent | undefined;
-    private preHooks: PreRequestHook<Meta>[] = [];
-    private postHooks: PostRequestHook<any, Meta>[] = [];
+export class HttpClient<Meta = unknown> {
+    private readonly timeout: number;
+    private readonly headers: Record<string, string>;
+    private readonly backoff: BackOffOptions;
+    private readonly dispatcher: ProxyAgent | undefined;
+    private readonly preHooks: PreRequestHook<Meta>[] = [];
+    private readonly postHooks: PostRequestHook<unknown, Meta>[] = [];
 
-    constructor(options?: HttpClientOptions) {
+    constructor(options?: Partial<HttpClientOptions>) {
         if (options && typeof options !== 'object')
             throw new Error('HttpClient options must be an object or null');
 
         const { timeout, headers, backoff, proxy } = createOptions<HttpClientOptions>(
             DEFAULT_HTTP_OPTIONS,
             options || {}
-        ) as HttpClientOptions & { backoff: BackOffOptions, proxy: ProxyOptions };
+        ) as HttpClientOptions & { backoff: BackOffOptions; proxy: ProxyOptions };
 
         if (isNaN(timeout) || timeout < 0)
             throw new Error(`Option 'timeout' must be a non-negative number. Received: ${timeout}`);
@@ -51,27 +51,44 @@ export class HttpClient<Meta> {
     }
 
     public onResponse<ResultBody>(hook: PostRequestHook<ResultBody, Meta>): this {
-        this.postHooks.push(hook);
+        this.postHooks.push((context, result) =>
+            hook(context, result as RequestResult<ResultBody>)
+        );
         return this;
     }
 
-    public async get<ResultBody>(url: string, options?: NoBodyOptions<Meta>) {
+    public async get<ResultBody>(
+        url: string,
+        options?: NoBodyOptions<Meta>
+    ): Promise<RequestResult<ResultBody>> {
         return this.request<ResultBody>(url, { ...options, method: 'GET' });
     }
 
-    public async post<ResultBody>(url: string, options?: BodyOptions<Meta>) {
+    public async post<ResultBody>(
+        url: string,
+        options?: BodyOptions<Meta>
+    ): Promise<RequestResult<ResultBody>> {
         return this.request<ResultBody>(url, { ...options, method: 'POST' });
     }
 
-    public async put<ResultBody>(url: string, options?: BodyOptions<Meta>) {
+    public async put<ResultBody>(
+        url: string,
+        options?: BodyOptions<Meta>
+    ): Promise<RequestResult<ResultBody>> {
         return this.request<ResultBody>(url, { ...options, method: 'PUT' });
     }
 
-    public async patch<ResultBody>(url: string, options?: BodyOptions<Meta>) {
+    public async patch<ResultBody>(
+        url: string,
+        options?: BodyOptions<Meta>
+    ): Promise<RequestResult<ResultBody>> {
         return this.request<ResultBody>(url, { ...options, method: 'PATCH' });
     }
 
-    public async delete<ResultBody>(url: string, options?: NoBodyOptions<Meta>) {
+    public async delete<ResultBody>(
+        url: string,
+        options?: NoBodyOptions<Meta>
+    ): Promise<RequestResult<ResultBody>> {
         return this.request<ResultBody>(url, { ...options, method: 'DELETE' });
     }
 
@@ -100,7 +117,7 @@ export class HttpClient<Meta> {
 
         const context: RequestContext<Meta> = {
             request: { url, method, headers, body: resolvedBody },
-            meta: meta as Meta
+            meta
         };
 
         for (const hook of this.preHooks) await hook(context);

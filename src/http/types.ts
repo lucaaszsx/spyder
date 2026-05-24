@@ -41,7 +41,7 @@ export type PostRequestHook<ResultBody = unknown, Meta = unknown> = (
 
 export type JitterType = 'none' | 'full' | null;
 
-export type BackOffOptions = {
+export interface BackOffOptions {
     enable: boolean;
     delayFirstAttempt: boolean;
     jitter: JitterType;
@@ -50,17 +50,16 @@ export type BackOffOptions = {
     startingDelay: number;
     baseMultiplier: number;
     retry: (error: unknown, attempt: number) => boolean | Promise<boolean>;
-};
+}
 
-export type ProxyOptions = {
+export interface ProxyOptions {
     url: string;
     auth?: { username: string; password: string };
-};
+}
 
-export type HttpClientOptions = {
+export interface HttpClientOptions {
     timeout: number;
     headers: Record<string, string>;
     backoff: Partial<BackOffOptions>;
     proxy?: Partial<ProxyOptions>;
-};
-
+}
