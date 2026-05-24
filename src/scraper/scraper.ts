@@ -1,17 +1,13 @@
-/*import { mergeObjects } from '../utils';
-import { defaultOptions } from '../constants';
-import { ScraperOptions } from '../types';
+import { DEFAULT_SCRAPER_OPTIONS, createOptions } from '../constants';
+import type { ScraperOptions } from './types';
 import { HttpClient } from '../http';
 
 export class Scraper {
-    protected readonly httpClient: HttpClient;
-    readonly debug: boolean;
+    protected readonly http: HttpClient;
 
     constructor(options: Partial<ScraperOptions> = {}) {
-        const resolved = mergeObjects<ScraperOptions>(defaultOptions, options);
+        const resolved = createOptions<ScraperOptions>(DEFAULT_SCRAPER_OPTIONS, options);
 
-        this.httpClient = new HttpClient(resolved.httpClient);
-        this.debug = resolved.debug;
+        this.http = new HttpClient(resolved.http);
     }
 }
-*/

@@ -1,4 +1,5 @@
 import type { HttpClientOptions, BackOffOptions } from '../http/types';
+import type { ScraperOptions } from '../scraper/types';
 import { mergeObjects } from '../utils';
 import { HttpError } from '../http';
 
@@ -28,14 +29,10 @@ export const DEFAULT_HTTP_OPTIONS: HttpClientOptions = {
     backoff: DEFAULT_BACKOFF_OPTIONS
 };
 
-export const DEFAULT_OPTIONS: {
-    http?: HttpClientOptions;
-    debug?: boolean;
-} = {
-    http: DEFAULT_HTTP_OPTIONS,
-    debug: false
+export const DEFAULT_SCRAPER_OPTIONS: ScraperOptions = {
+    http: DEFAULT_HTTP_OPTIONS
 };
 
-export function createOptions<T>(base: T, options: Partial<T>): T {
+export function createOptions<T extends object>(base: T, options: Partial<T>): T {
     return mergeObjects<T>(base, options);
 }
