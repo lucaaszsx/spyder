@@ -42,7 +42,9 @@ client
         if (!meta) return;
 
         const elapsed = Date.now() - meta.startedAt;
-        console.log(`[PostRequestHook] [${meta.id}] ← ${result.status} ${request.url} (${elapsed}ms)`);
+        console.log(
+            `[PostRequestHook] [${meta.id}] ← ${result.status} ${request.url} (${elapsed}ms)`
+        );
     });
 
 function makeMeta(): Meta {
@@ -65,7 +67,9 @@ async function fetchTodos(): Promise<void> {
     );
 
     for (const { body } of todos)
-        console.log(`  Todo #${body.id} from user ${body.userId}: "${body.title}" [${body.completed ? 'done' : 'pending'}]`);
+        console.log(
+            `  Todo #${body.id} from user ${body.userId}: "${body.title}" [${body.completed ? 'done' : 'pending'}]`
+        );
 }
 
 async function fetchPost(): Promise<void> {
@@ -107,7 +111,8 @@ async function testAbort(): Promise<void> {
             meta: makeMeta()
         });
     } catch (e) {
-        if (e instanceof Error && e.name === 'AbortError') console.log('  Request was aborted as expected:', e);
+        if (e instanceof Error && e.name === 'AbortError')
+            console.log('  Request was aborted as expected:', e);
         else console.error('  Unexpected error:', e);
     }
 }
