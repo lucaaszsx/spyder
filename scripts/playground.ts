@@ -13,7 +13,10 @@ function getFiles(dir: string, base = PLAYGROUND_PATH): string[] {
         const rel = join(base, entry).replace(PLAYGROUND_PATH + '/', '');
 
         if (statSync(full).isDirectory()) return getFiles(full, join(base, entry));
-        if (entry.endsWith('.ts')) return [rel];
+
+        // Files that starts with "_" will not be listed in the playground selection,
+        // as they are meant to be imported
+        if (entry.endsWith('.ts') && !entry.startsWith('_')) return [rel];
 
         return [];
     });
