@@ -1,44 +1,59 @@
-import tsPlugin from '@typescript-eslint/eslint-plugin';
-import tsParser from '@typescript-eslint/parser';
-import onlyWarn from 'eslint-plugin-only-warn';
 import prettier from 'eslint-config-prettier';
-import globals from 'globals';
-import js from '@eslint/js';
+import tseslint from 'typescript-eslint';
+import eslint from '@eslint/js';
 
-export default [
-    js.configs.recommended,
-
+export default tseslint.config(
+    eslint.configs.recommended,
+    ...tseslint.configs.stylistic,
     prettier,
 
     {
+        files: ['src/**/*.ts'],
+        extends: [...tseslint.configs.recommendedTypeChecked],
         languageOptions: {
-            globals: {
-                ...globals.node
-            }
-        }
-    },
-
-    {
-        files: ['**/*.ts'],
-        languageOptions: {
-            parser: tsParser,
             parserOptions: {
-                project: './tsconfig.eslint.json'
+                project: './tsconfig.eslint.json',
+                tsconfigRootDir: import.meta.dirname
             }
-        },
-        plugins: {
-            '@typescript-eslint': tsPlugin
         },
         rules: {
-            '@typescript-eslint/no-unused-vars': ['warn', { argsIgnorePattern: '^_' }],
-            '@typescript-eslint/no-explicit-any': 'warn',
-            '@typescript-eslint/explicit-module-boundary-types': 'off'
+            '@typescript-eslint/no-floating-promises': 'error',
+            '@typescript-eslint/no-misused-promises': [
+                'error',
+                { checksVoidReturn: { attributes: false } }
+            ],
+            '@typescript-eslint/switch-exhaustiveness-check': 'error',
+            '@typescript-eslint/no-unsafe-assignment': 'error',
+            '@typescript-eslint/no-unsafe-member-access': 'error',
+            '@typescript-eslint/no-unsafe-argument': 'error',
+            '@typescript-eslint/no-unsafe-return': 'error',
+            '@typescript-eslint/no-unsafe-call': 'error',
+            '@typescript-eslint/explicit-module-boundary-types': 'error',
+            '@typescript-eslint/no-explicit-any': 'error',
+            '@typescript-eslint/prefer-readonly': 'error',
+            '@typescript-eslint/consistent-type-imports': [
+                'error',
+                { prefer: 'type-imports', fixStyle: 'inline-type-imports' }
+            ],
+            '@typescript-eslint/no-unused-vars': [
+                'error',
+                { argsIgnorePattern: '^_', varsIgnorePattern: '^_' }
+            ],
+            '@typescript-eslint/restrict-template-expressions': [
+                'error',
+                { allowNumber: true, allowBoolean: true }
+            ],
+            'no-unused-vars': 'off',
+            'no-console': 'error'
         }
     },
 
-    onlyWarn,
+    {
+        files: ['playground/**/*.ts', 'scripts/**/*.ts'],
+        extends: [tseslint.configs.disableTypeChecked]
+    },
 
     {
-        ignores: ['dist/**']
+        ignores: ['dist/', 'node_modules/']
     }
-];
+);
