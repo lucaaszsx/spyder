@@ -1,55 +1,110 @@
-import { WebCrapType } from '../type';
+import {
+    WebCrapCheckBetweenLength,
+    WebCrapCheckLengthEquals,
+    WebCrapCheckStartsWith,
+    WebCrapCheckMaxLength,
+    WebCrapCheckMinLength,
+    WebCrapCheckUpperCase,
+    WebCrapCheckLowerCase,
+    WebCrapCheckEndsWith,
+    WebCrapCheckIncludes,
+    WebCrapCheckRegex,
+    WebCrapCheckSlug,
+    WebCrapCheckUrl
+} from '../checks/string';
+import { WebCrapSchema } from '../schema';
 
-export class WebCrapString<T = unknown> extends WebCrapType<T> {
-    public min(): this {
-        return this;
+export class WebCrapString extends WebCrapSchema<string> {
+    public trim(): this {
+        return this._addTransform((v) => v.trim());
     }
 
-    public max(): this {
-        return this;
+    public toLowerCase(): this {
+        return this._addTransform((v) => v.toLowerCase());
     }
 
-    public between(): this {
-        return this;
+    public toUpperCase(): this {
+        return this._addTransform((v) => v.toUpperCase());
     }
 
-    public length(): this {
-        return this;
+    public normalize(): this {
+        return this._addTransform((v) => v.replace(/\s+/g, ' ').trim());
     }
 
-    public startsWith(): this {
-        return this;
+    public replace(searchValue: string | RegExp, replaceValue: string): this {
+        return this._addTransform((v) => v.replace(searchValue, replaceValue));
     }
 
-    public endsWith(): this {
-        return this;
+    public slugify(): this {
+        return this._addTransform((v) =>
+            v
+                .normalize('NFKD')
+                .replace(/[\u0300-\u036f]/g, '')
+                .replace(/[^\w\s-]/g, '')
+                .trim()
+                .replace(/[\s_]+/g, '-')
+                .replace(/-{2,}/g, '-')
+                .replace(/^-|-$/g, '')
+                .toLowerCase()
+        );
     }
 
-    public includes(): this {
-        return this;
+    public min(minimum: number, inclusive?: boolean): this {
+        return this._addCheck(new WebCrapCheckMinLength(minimum, inclusive));
     }
 
-    public uppercase(): this {
-        return this;
+    public max(maximum: number, inclusive?: boolean): this {
+        return this._addCheck(new WebCrapCheckMaxLength(maximum, inclusive));
+    }
+
+    public between(
+        minimum: number,
+        maximum: number,
+        minInclusive?: boolean,
+        maxInclusive?: boolean
+    ): this {
+        return this._addCheck(
+            new WebCrapCheckBetweenLength(minimum, maximum, minInclusive, maxInclusive)
+        );
+    }
+
+    public length(expected: number): this {
+        return this._addCheck(new WebCrapCheckLengthEquals(expected));
+    }
+
+    public nonempty(): this {
+        return this.min(1);
+    }
+
+    public startsWith(prefix: string, caseInsensitive?: boolean): this {
+        return this._addCheck(new WebCrapCheckStartsWith(prefix, caseInsensitive));
+    }
+
+    public endsWith(suffix: string, caseInsensitive?: boolean): this {
+        return this._addCheck(new WebCrapCheckEndsWith(suffix, caseInsensitive));
+    }
+
+    public includes(includes: string, caseInsensitive?: boolean): this {
+        return this._addCheck(new WebCrapCheckIncludes(includes, caseInsensitive));
     }
 
     public lowercase(): this {
-        return this;
+        return this._addCheck(new WebCrapCheckLowerCase());
     }
 
-    public httpUrl(): this {
-        return this;
+    public uppercase(): this {
+        return this._addCheck(new WebCrapCheckUpperCase());
+    }
+
+    public regex(pattern: RegExp): this {
+        return this._addCheck(new WebCrapCheckRegex(pattern));
     }
 
     public url(): this {
-        return this;
+        return this._addCheck(new WebCrapCheckUrl());
     }
 
-    public uuid(): this {
-        return this;
+    public slug(): this {
+        return this._addCheck(new WebCrapCheckSlug());
     }
-
-    /**public parse(context: unknown): T {
-        
-    }*/
 }
