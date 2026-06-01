@@ -2,7 +2,7 @@ import type { WebCrapIssue } from '../errors';
 
 export interface WebCrapCheckDef {
     kind: string;
-    abort?: boolean;
+    abort: boolean;
 }
 
 export interface WebCrapCheckPayload<Value> {

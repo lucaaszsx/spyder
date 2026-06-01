@@ -9,6 +9,7 @@ import type {
     WebCrapIssueTooBig
 } from '../errors';
 import { type WebCrapCheckDef, type WebCrapCheckPayload, WebCrapCheck } from './base';
+import * as util from '../../utils';
 
 export interface WebCrapCheckMinLengthDef extends WebCrapCheckDef {
     kind: 'string_min_length';
@@ -75,9 +76,11 @@ export interface WebCrapCheckRegexDef extends WebCrapCheckStringFormatDef<'regex
     pattern: RegExp;
 }
 
+// export interface WebCrapCheckSlugDef extends WebCrapCheckStringFormatDef<'slug'> {}
+
 export class WebCrapCheckMinLength extends WebCrapCheck<string, WebCrapCheckMinLengthDef> {
-    constructor(minimum: number, inclusive = true) {
-        super({ kind: 'string_min_length', minimum, inclusive });
+    constructor(minimum: number, inclusive = true, abort = false) {
+        super({ kind: 'string_min_length', minimum, inclusive, abort });
     }
 
     public run(payload: WebCrapCheckPayload<string>): void {
@@ -99,8 +102,8 @@ export class WebCrapCheckMinLength extends WebCrapCheck<string, WebCrapCheckMinL
 }
 
 export class WebCrapCheckMaxLength extends WebCrapCheck<string, WebCrapCheckMaxLengthDef> {
-    constructor(maximum: number, inclusive = true) {
-        super({ kind: 'string_max_length', maximum, inclusive });
+    constructor(maximum: number, inclusive = true, abort = false) {
+        super({ kind: 'string_max_length', maximum, inclusive, abort });
     }
 
     public run(payload: WebCrapCheckPayload<string>): void {
@@ -122,8 +125,21 @@ export class WebCrapCheckMaxLength extends WebCrapCheck<string, WebCrapCheckMaxL
 }
 
 export class WebCrapCheckBetweenLength extends WebCrapCheck<string, WebCrapCheckBetweenLengthDef> {
-    constructor(minimum: number, maximum: number, minInclusive = true, maxInclusive = true) {
-        super({ kind: 'string_between_length', minimum, maximum, minInclusive, maxInclusive });
+    constructor(
+        minimum: number,
+        maximum: number,
+        minInclusive = true,
+        maxInclusive = true,
+        abort = false
+    ) {
+        super({
+            kind: 'string_between_length',
+            minimum,
+            maximum,
+            minInclusive,
+            maxInclusive,
+            abort
+        });
     }
 
     public run(payload: WebCrapCheckPayload<string>): void {
@@ -156,8 +172,8 @@ export class WebCrapCheckBetweenLength extends WebCrapCheck<string, WebCrapCheck
 }
 
 export class WebCrapCheckLengthEquals extends WebCrapCheck<string, WebCrapCheckLengthEqualsDef> {
-    constructor(expected: number) {
-        super({ kind: 'string_length_equals', expected });
+    constructor(expected: number, abort = false) {
+        super({ kind: 'string_length_equals', expected, abort });
     }
 
     public run(payload: WebCrapCheckPayload<string>): void {
@@ -174,8 +190,8 @@ export class WebCrapCheckLengthEquals extends WebCrapCheck<string, WebCrapCheckL
 }
 
 export class WebCrapCheckStartsWith extends WebCrapCheck<string, WebCrapCheckStartsWithDef> {
-    constructor(prefix: string, caseInsensitive = false) {
-        super({ kind: 'string_format', format: 'starts_with', prefix, caseInsensitive });
+    constructor(prefix: string, caseInsensitive = false, abort = false) {
+        super({ kind: 'string_format', format: 'starts_with', prefix, caseInsensitive, abort });
     }
 
     public run(payload: WebCrapCheckPayload<string>): void {
@@ -199,8 +215,8 @@ export class WebCrapCheckStartsWith extends WebCrapCheck<string, WebCrapCheckSta
 }
 
 export class WebCrapCheckEndsWith extends WebCrapCheck<string, WebCrapCheckEndsWithDef> {
-    constructor(suffix: string, caseInsensitive = false) {
-        super({ kind: 'string_format', format: 'ends_with', suffix, caseInsensitive });
+    constructor(suffix: string, caseInsensitive = false, abort = false) {
+        super({ kind: 'string_format', format: 'ends_with', suffix, caseInsensitive, abort });
     }
 
     public run(payload: WebCrapCheckPayload<string>): void {
@@ -224,8 +240,8 @@ export class WebCrapCheckEndsWith extends WebCrapCheck<string, WebCrapCheckEndsW
 }
 
 export class WebCrapCheckIncludes extends WebCrapCheck<string, WebCrapCheckIncludesDef> {
-    constructor(includes: string, caseInsensitive = false) {
-        super({ kind: 'string_format', format: 'includes', includes, caseInsensitive });
+    constructor(includes: string, caseInsensitive = false, abort = false) {
+        super({ kind: 'string_format', format: 'includes', includes, caseInsensitive, abort });
     }
 
     public run(payload: WebCrapCheckPayload<string>): void {
@@ -252,12 +268,12 @@ export class WebCrapCheckLowerCase extends WebCrapCheck<
     string,
     WebCrapCheckStringFormatDef<'lowercase'>
 > {
-    constructor() {
-        super({ kind: 'string_format', format: 'lowercase' });
+    constructor(abort = false) {
+        super({ kind: 'string_format', format: 'lowercase', abort });
     }
 
     public run(payload: WebCrapCheckPayload<string>): void {
-        if (/^[^A-Z]*$/.test(payload.value)) return;
+        if (util.makeRegexTest('lowercase', payload.value)) return;
 
         payload.issues.push({
             code: 'invalid_format',
@@ -273,12 +289,12 @@ export class WebCrapCheckUpperCase extends WebCrapCheck<
     string,
     WebCrapCheckStringFormatDef<'uppercase'>
 > {
-    constructor() {
-        super({ kind: 'string_format', format: 'uppercase' });
+    constructor(abort = false) {
+        super({ kind: 'string_format', format: 'uppercase', abort });
     }
 
     public run(payload: WebCrapCheckPayload<string>): void {
-        if (/^[^a-z]*$/.test(payload.value)) return;
+        if (util.makeRegexTest('uppercase', payload.value)) return;
 
         payload.issues.push({
             code: 'invalid_format',
@@ -291,8 +307,8 @@ export class WebCrapCheckUpperCase extends WebCrapCheck<
 }
 
 export class WebCrapCheckRegex extends WebCrapCheck<string, WebCrapCheckRegexDef> {
-    constructor(pattern: RegExp) {
-        super({ kind: 'string_format', format: 'regex', pattern });
+    constructor(pattern: RegExp, abort = false) {
+        super({ kind: 'string_format', format: 'regex', pattern, abort });
     }
 
     public run(payload: WebCrapCheckPayload<string>): void {
@@ -310,8 +326,8 @@ export class WebCrapCheckRegex extends WebCrapCheck<string, WebCrapCheckRegexDef
 }
 
 export class WebCrapCheckUrl extends WebCrapCheck<string, WebCrapCheckStringFormatDef<'url'>> {
-    constructor() {
-        super({ kind: 'string_format', format: 'url' });
+    constructor(abort = false) {
+        super({ kind: 'string_format', format: 'url', abort });
     }
 
     public run(payload: WebCrapCheckPayload<string>): void {
@@ -328,12 +344,12 @@ export class WebCrapCheckUrl extends WebCrapCheck<string, WebCrapCheckStringForm
 }
 
 export class WebCrapCheckSlug extends WebCrapCheck<string, WebCrapCheckStringFormatDef<'slug'>> {
-    constructor() {
-        super({ kind: 'string_format', format: 'slug' });
+    constructor(abort = false) {
+        super({ kind: 'string_format', format: 'slug', abort });
     }
 
     public run(payload: WebCrapCheckPayload<string>): void {
-        if (/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(payload.value)) return;
+        if (util.slugify(payload.value) === payload.value) return;
 
         payload.issues.push({
             code: 'invalid_format',
