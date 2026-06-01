@@ -1,45 +1,62 @@
 import type { WebCrapCheck, WebCrapCheckPayload } from './checks/base';
+import * as util from '../utils';
+
+interface WebCrapTransformStep {
+    kind: 'transform';
+    tx: (value: unknown) => unknown;
+}
+
+interface WebCrapCheckStep {
+    kind: 'check';
+    check: WebCrapCheck<unknown>;
+}
+
+type WebCrapStep = WebCrapTransformStep | WebCrapCheckStep;
 
 export interface WebCrapSchemaDef {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    checks: WebCrapCheck<any>[];
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    transforms: ((value: any) => any)[];
+    steps: WebCrapStep[];
     hasCatch: boolean;
     catchValue?: unknown;
+    innerSchema: WebCrapSchema<unknown> | null;
 }
 
 export abstract class WebCrapSchema<O> {
     declare readonly _output: O;
     readonly _def: WebCrapSchemaDef;
 
-    constructor() {
+    constructor(innerSchema: WebCrapSchema<unknown> | null = null) {
         this._def = {
-            checks: [],
-            transforms: [],
-            hasCatch: false
+            steps: [],
+            hasCatch: false,
+            innerSchema
         };
     }
 
-    public parse(rawValue: O): O {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        let value: any = rawValue;
+    public parse(rawValue: unknown): O {
+        let value: unknown = rawValue;
+        const payload: WebCrapCheckPayload<unknown> = { path: [], issues: [], value };
 
-        for (const transform of this._def.transforms)
-            // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-            value = transform(value);
+        stepLoop: for (const step of this._def.steps) {
+            switch (step.kind) {
+                case 'transform':
+                    value = step.tx(value);
+                    payload.value = value;
+                    break;
 
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-        const payload: WebCrapCheckPayload<O> = { path: [], issues: [], value };
+                case 'check':
+                    step.check.run(payload);
+                    if (step.check.abort && payload.issues.length > 0) break stepLoop;
+                    break;
 
-        for (const check of this._def.checks) check.run(payload);
+                default:
+                    break;
+            }
+        }
 
         if (payload.issues.length > 0) {
-            if (this._def.hasCatch) return this._def.catchValue;
+            if (this._def.hasCatch) return this._def.catchValue as O;
 
-            const err = new Error(
-                `One or more issues found when parsing value: ${value as string}`
-            );
+            const err = new Error(`One or more issues found when parsing value: ${String(value)}`);
             Object.assign(err, { issues: payload.issues });
 
             throw err;
@@ -56,33 +73,25 @@ export abstract class WebCrapSchema<O> {
         return clone;
     }
 
-    protected _addCheck(checker: WebCrapCheck<unknown>): this {
+    protected _addCheck(check: WebCrapCheck<unknown>): this {
         const clone = this._clone();
-        clone._def.checks.push(checker);
+        clone._def.steps.push({ kind: 'check', check });
 
         return clone;
     }
 
-    protected _addTransform(transformer: (value: O) => O): this {
+    protected _addTransform(tx: (value: O) => O): this {
         const clone = this._clone();
-        clone._def.transforms.push(transformer);
+        clone._def.steps.push({ kind: 'transform', tx: tx as (value: unknown) => unknown });
 
         return clone;
     }
 
     protected _clone(): this {
-        const proto = Object.getPrototypeOf(this) as object;
-        const next = Object.create(proto) as this;
+        const clone = util.shallowClone(this) as this;
+        clone._def.steps = [...this._def.steps];
 
-        Object.assign(next, {
-            _def: {
-                ...this._def,
-                checks: [...this._def.checks],
-                transforms: [...this._def.transforms]
-            }
-        });
-
-        return next;
+        return clone;
     }
 }
 
