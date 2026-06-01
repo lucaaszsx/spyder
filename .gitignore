@@ -19,3 +19,6 @@ dist
 # Cache
 .prettiercache
 .eslintcache
+
+# Test files
+playground/**/_dev
