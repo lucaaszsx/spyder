@@ -49,10 +49,10 @@
     "homepage": "https://github.com/lucaaszsx/webcrap#README",
     "scripts": {
         "clean": "rimraf dist",
-        "prebuild": "pnpm run check",
+        "prebuild": "pnpm run type-check",
         "build": "tsup",
         "build:only": "tsup --no-clean",
-        "playground": "tsx scripts/playground.ts",
+        "dev:playground": "tsx scripts/playground.ts",
         "type-check": "tsc --noEmit",
         "lint": "eslint .",
         "lint:fix": "eslint . --fix",
