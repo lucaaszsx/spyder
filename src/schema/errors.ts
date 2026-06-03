@@ -9,18 +9,7 @@ export interface SpyderIssueBase {
 }
 
 /** Issues */
-export type SpyderExpectedType =
-    | 'string'
-    | 'number'
-    | 'int'
-    | 'boolean'
-    | 'date'
-    | 'url'
-    | 'array'
-    | 'object'
-    | 'null'
-    | 'undefined'
-    | 'never';
+export type SpyderExpectedType = 'string' | 'number' | 'NaN';
 
 export interface SpyderIssueInvalidType<Input = unknown> extends SpyderIssueBase {
     readonly code: 'invalid_type';
@@ -47,6 +36,12 @@ export interface SpyderIssueInvalidLength<Input = unknown> extends SpyderIssueBa
     readonly code: 'invalid_length';
     readonly expected: number;
     readonly input: Input;
+}
+
+export interface SpyderIssueNotMultipleOf extends SpyderIssueBase {
+    readonly code: 'not_multiple_of';
+    readonly divisor: number;
+    readonly input: number;
 }
 
 export interface SpyderIssueInvalidStringFormat extends SpyderIssueBase {
@@ -94,6 +89,7 @@ export type SpyderStringFormatIssues =
 export type SpyderIssue =
     | SpyderIssueInvalidType
     | SpyderIssueInvalidLength
+    | SpyderIssueNotMultipleOf
     | SpyderStringFormatIssues
     | SpyderIssueTooSmall
     | SpyderIssueTooBig;
