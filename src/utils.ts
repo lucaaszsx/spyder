@@ -20,7 +20,7 @@ export type ParsedTypes =
 
 export const REGEX_PATTERNS = {
     uppercase: /^[^a-z]*$/,
-    lowercase: /^[^a-z]*$/
+    lowercase: /^[^A-Z]*$/
 } as const;
 
 export function makeRegexTest(pattern: keyof typeof REGEX_PATTERNS, str: string): boolean {
