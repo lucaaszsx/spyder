@@ -21,6 +21,22 @@ export class SpyderStringSchema extends SpyderSchema<string> {
         return this._addTransform((v) => v.trim());
     }
 
+    public trimStart(): this {
+        return this._addTransform((v) => v.trimStart());
+    }
+
+    public trimEnd(): this {
+        return this._addTransform((v) => v.trimEnd());
+    }
+
+    public slice(start?: number, end?: number): this {
+        return this._addTransform((v) => v.slice(start, end));
+    }
+
+    public substring(start: number, end?: number): this {
+        return this._addTransform((v) => v.substring(start, end));
+    }
+
     public toLowerCase(): this {
         return this._addTransform((v) => v.toLowerCase());
     }
