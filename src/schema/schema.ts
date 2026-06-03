@@ -12,7 +12,7 @@ interface WebCrapCheckStep {
     check: WebCrapCheck<unknown>;
 }
 
-type WebCrapStep = WebCrapTransformStep | WebCrapCheckStep;
+export type WebCrapStep = WebCrapTransformStep | WebCrapCheckStep;
 
 export interface WebCrapSchemaDef {
     steps: WebCrapStep[];
@@ -35,26 +35,28 @@ export abstract class WebCrapSchema<O> {
 
     public parse(rawValue: unknown): O {
         let value: unknown = rawValue;
-        const payload: WebCrapCheckPayload<unknown> = { path: [], issues: [], value };
+        const payload = this._parse(new WebCrapSchemaPayload<unknown>([], value));
 
-        stepLoop: for (const step of this._def.steps) {
-            switch (step.kind) {
-                case 'transform':
-                    value = step.tx(value);
-                    payload.value = value;
-                    break;
+        if (!payload.hasIssues) {
+            stepLoop: for (const step of this._def.steps) {
+                switch (step.kind) {
+                    case 'transform':
+                        value = step.tx(value);
+                        payload.value = value;
+                        break;
 
-                case 'check':
-                    step.check.run(payload);
-                    if (step.check.abort && payload.issues.length > 0) break stepLoop;
-                    break;
+                    case 'check':
+                        step.check.run(payload);
+                        if (step.check.abort && payload.hasIssues) break stepLoop;
+                        break;
 
-                default:
-                    break;
+                    default:
+                        break;
+                }
             }
         }
 
-        if (payload.issues.length > 0) {
+        if (payload.hasIssues) {
             if (this._def.hasCatch) return this._def.catchValue as O;
 
             const err = new Error(`One or more issues found when parsing value: ${String(value)}`);
@@ -73,6 +75,10 @@ export abstract class WebCrapSchema<O> {
 
         return clone;
     }
+
+    protected abstract _parse(
+        payload: WebCrapSchemaPayload<unknown>
+    ): WebCrapSchemaPayload<unknown>;
 
     protected _addCheck(check: WebCrapCheck<unknown>): this {
         const clone = this._clone();

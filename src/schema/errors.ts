@@ -1,4 +1,5 @@
 import type { WebCrapStringFormats } from './checks/string';
+import type * as util from '../utils';
 
 export interface WebCrapIssueBase {
     readonly code: string;
@@ -24,7 +25,7 @@ export type WebCrapExpectedType =
 export interface WebCrapIssueInvalidType<Input = unknown> extends WebCrapIssueBase {
     readonly code: 'invalid_type';
     readonly expected: WebCrapExpectedType;
-    readonly received: WebCrapExpectedType;
+    readonly received: util.ParsedTypes;
     readonly input?: Input;
 }
 

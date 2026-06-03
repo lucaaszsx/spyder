@@ -16,7 +16,7 @@ import type { WebCrapSchemaPayload } from '../payload';
 import { WebCrapSchema } from '../schema';
 import * as util from '../../utils';
 
-export class WebCrapString extends WebCrapSchema<string> {
+export class WebCrapStringSchema extends WebCrapSchema<string> {
     public trim(): this {
         return this._addTransform((v) => v.trim());
     }
@@ -99,5 +99,12 @@ export class WebCrapString extends WebCrapSchema<string> {
 
     public slug(abort?: boolean): this {
         return this._addCheck(new WebCrapCheckSlug(abort));
+    }
+
+    protected _parse(payload: WebCrapSchemaPayload<string>): WebCrapSchemaPayload<string> {
+        if (typeof payload.value !== 'string')
+            payload.addInvalidTypeIssue('string', util.getParsedType(payload.value));
+
+        return payload;
     }
 }

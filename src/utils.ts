@@ -1,3 +1,23 @@
+export type DistributiveOmit<T, K extends PropertyKey> = T extends unknown ? Omit<T, K> : never;
+
+export type ParsedTypes =
+    | 'string'
+    | 'number'
+    | 'bigint'
+    | 'boolean'
+    | 'symbol'
+    | 'undefined'
+    | 'object'
+    | 'function'
+    | 'file'
+    | 'date'
+    | 'array'
+    | 'map'
+    | 'set'
+    | 'nan'
+    | 'null'
+    | 'promise';
+
 export const REGEX_PATTERNS = {
     uppercase: /^[^a-z]*$/,
     lowercase: /^[^a-z]*$/
@@ -5,6 +25,34 @@ export const REGEX_PATTERNS = {
 
 export function makeRegexTest(pattern: keyof typeof REGEX_PATTERNS, str: string): boolean {
     return !!REGEX_PATTERNS[pattern]?.test(str);
+}
+
+export function getParsedType(value: unknown): ParsedTypes {
+    const type = typeof value;
+
+    switch (type) {
+        case 'undefined':
+        case 'string':
+        case 'number':
+        case 'boolean':
+        case 'function':
+        case 'bigint':
+        case 'symbol':
+            return type;
+
+        case 'object':
+            if (value === null) return 'null';
+            if (Array.isArray(value)) return 'array';
+            if (value instanceof Map) return 'map';
+            if (value instanceof Set) return 'set';
+            if (value instanceof Date) return 'date';
+            if (value instanceof File) return 'file';
+
+            return 'object';
+
+        default:
+            throw new Error(`Cannot parse type of the provided value`);
+    }
 }
 
 export function slugify(text: string): string {
