@@ -54,8 +54,23 @@ export class SpyderNumberSchema extends SpyderSchema<number> {
         return this.max(maximum, false, abort);
     }
 
-    public lte(minimum: number, abort?: boolean): this {
-        return this.max(minimum, true, abort);
+    public lte(maximum: number, abort?: boolean): this {
+        return this.max(maximum, true, abort);
+    }
+
+    public between(
+        minimum: number,
+        maximum: number,
+        minInclusive?: boolean,
+        maxInclusive?: boolean,
+        abort?: boolean
+    ): this {
+        if (minInclusive) this.gte(minimum, abort);
+        else this.gt(minimum, abort);
+        if (maxInclusive) this.lte(maximum, abort);
+        else this.lt(maximum, abort);
+
+        return this;
     }
 
     public positive(abort?: boolean): this {
