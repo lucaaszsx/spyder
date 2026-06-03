@@ -1,4 +1,4 @@
-import type { SpyderExpectedType, SpyderIssue } from './errors';
+import type { SpyderExpectedType, SpyderIssue, SpyderIssueInvalidType } from './errors';
 import type * as util from '../utils';
 
 export class SpyderSchemaPayload<Value = unknown> {
@@ -20,13 +20,18 @@ export class SpyderSchemaPayload<Value = unknown> {
         this.issues.push(this._createIssue(issue));
     }
 
-    public addInvalidTypeIssue(expected: SpyderExpectedType, received: util.ParsedTypes): void {
+    public addInvalidTypeIssue<Input = unknown>(
+        input: Input,
+        expected: SpyderExpectedType,
+        received: util.ParsedTypes
+    ): void {
         this.addIssue({
             code: 'invalid_type',
             message: `Expected a value of type ${expected}, received ${received}`,
             expected,
-            received
-        });
+            received,
+            input
+        } satisfies util.DistributiveOmit<SpyderIssueInvalidType<Input>, 'path'>);
     }
 
     private _createIssue(issue: util.DistributiveOmit<SpyderIssue, 'path'>): SpyderIssue {

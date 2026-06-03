@@ -5,7 +5,7 @@ export interface SpyderIssueBase {
     readonly code: string;
     readonly path: PropertyKey[];
     readonly message: string;
-    readonly input?: unknown;
+    readonly input: unknown;
 }
 
 /** Issues */
@@ -26,34 +26,34 @@ export interface SpyderIssueInvalidType<Input = unknown> extends SpyderIssueBase
     readonly code: 'invalid_type';
     readonly expected: SpyderExpectedType;
     readonly received: util.ParsedTypes;
-    readonly input?: Input;
+    readonly input: Input;
 }
 
 export interface SpyderIssueTooSmall<Input = unknown> extends SpyderIssueBase {
     readonly code: 'too_small';
     readonly minimum: number;
     readonly inclusive: boolean;
-    readonly input?: Input;
+    readonly input: Input;
 }
 
 export interface SpyderIssueTooBig<Input = unknown> extends SpyderIssueBase {
     readonly code: 'too_big';
     readonly maximum: number;
     readonly inclusive: boolean;
-    readonly input?: Input;
+    readonly input: Input;
 }
 
 export interface SpyderIssueInvalidLength<Input = unknown> extends SpyderIssueBase {
     readonly code: 'invalid_length';
     readonly expected: number;
-    readonly input?: Input;
+    readonly input: Input;
 }
 
 export interface SpyderIssueInvalidStringFormat extends SpyderIssueBase {
     readonly code: 'invalid_format';
     readonly format: SpyderStringFormats;
     readonly pattern?: string;
-    readonly input?: string;
+    readonly input: string;
 }
 
 export interface SpyderIssueStringCommonFormats extends SpyderIssueInvalidStringFormat {

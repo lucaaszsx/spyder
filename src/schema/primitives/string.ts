@@ -107,7 +107,7 @@ export class SpyderStringSchema extends SpyderSchema<string> {
     ): SpyderSchemaPayload<string> {
         if (def.coerce) payload.value = String(payload.value);
         if (typeof payload.value !== 'string')
-            payload.addInvalidTypeIssue('string', util.getParsedType(payload.value));
+            payload.addInvalidTypeIssue(payload.value, 'string', util.getParsedType(payload.value));
 
         return payload;
     }
