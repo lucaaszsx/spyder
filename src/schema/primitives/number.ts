@@ -94,8 +94,22 @@ export class SpyderNumberSchema extends SpyderSchema<number> {
         payload: SpyderSchemaPayload<number>
     ): SpyderSchemaPayload<number> {
         if (def.coerce) payload.value = Number(payload.value);
-        if (isNaN(payload.value))
+        if (typeof payload.value !== 'number' || isNaN(payload.value))
             payload.addInvalidTypeIssue('number', util.getParsedType(payload.value));
+        if (payload.value < this.minValue)
+            payload.addTooSmallIssue(
+                'The value provided is less than the minimum value of {{minimum}}',
+                payload.value,
+                this.minValue,
+                true
+            );
+        if (payload.value > this.maxValue)
+            payload.addTooBigIssue(
+                'The value provided is greater than the maximum value of {{maximum}}',
+                payload.value,
+                this.maxValue,
+                true
+            );
 
         return payload;
     }
