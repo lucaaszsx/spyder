@@ -37,7 +37,11 @@ export class SpyderSchemaPayload<Value = unknown> {
     ): void {
         this.addIssue({
             code: 'too_small',
-            message: util.replacePlaceholders(message, { received, minimum }),
+            message: util.replacePlaceholders(message, {
+                comparator: inclusive ? 'at least' : 'more than',
+                received,
+                minimum
+            }),
             minimum,
             inclusive,
             input: this.value
@@ -52,7 +56,11 @@ export class SpyderSchemaPayload<Value = unknown> {
     ): void {
         this.addIssue({
             code: 'too_big',
-            message: util.replacePlaceholders(message, { received, maximum }),
+            message: util.replacePlaceholders(message, {
+                comparator: inclusive ? 'at most' : 'less than',
+                received,
+                maximum
+            }),
             maximum,
             inclusive,
             input: this.value
