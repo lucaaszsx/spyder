@@ -1,11 +1,11 @@
-import type { WebCrapSchemaPayload } from "../payload";
+import type { SpyderSchemaPayload } from '../payload';
 
-export interface WebCrapCheckDef {
+export interface SpyderCheckDef {
     kind: string;
     abort: boolean;
 }
 
-export abstract class WebCrapCheck<T, D extends WebCrapCheckDef = WebCrapCheckDef> {
+export abstract class SpyderCheck<T, D extends SpyderCheckDef = SpyderCheckDef> {
     readonly _def: D;
 
     constructor(def: D) {
@@ -20,5 +20,5 @@ export abstract class WebCrapCheck<T, D extends WebCrapCheckDef = WebCrapCheckDe
         return !!this._def.abort;
     }
 
-    abstract run(payload: WebCrapSchemaPayload<T>): void;
+    abstract run(payload: SpyderSchemaPayload<T>): void;
 }

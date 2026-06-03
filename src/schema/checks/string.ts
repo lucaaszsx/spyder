@@ -1,20 +1,20 @@
-import { type WebCrapCheckDef, WebCrapCheck } from './base';
-import type { WebCrapSchemaPayload } from '../payload';
+import { type SpyderCheckDef, SpyderCheck } from './base';
+import type { SpyderSchemaPayload } from '../payload';
 import * as util from '../../utils';
 
-export interface WebCrapCheckMinLengthDef extends WebCrapCheckDef {
+export interface SpyderCheckMinLengthDef extends SpyderCheckDef {
     kind: 'string_min_length';
     minimum: number;
     inclusive: boolean;
 }
 
-export interface WebCrapCheckMaxLengthDef extends WebCrapCheckDef {
+export interface SpyderCheckMaxLengthDef extends SpyderCheckDef {
     kind: 'string_max_length';
     maximum: number;
     inclusive: boolean;
 }
 
-export interface WebCrapCheckBetweenLengthDef extends WebCrapCheckDef {
+export interface SpyderCheckBetweenLengthDef extends SpyderCheckDef {
     kind: 'string_between_length';
     minimum: number;
     maximum: number;
@@ -22,12 +22,12 @@ export interface WebCrapCheckBetweenLengthDef extends WebCrapCheckDef {
     maxInclusive: boolean;
 }
 
-export interface WebCrapCheckLengthEqualsDef extends WebCrapCheckDef {
+export interface SpyderCheckLengthEqualsDef extends SpyderCheckDef {
     kind: 'string_length_equals';
     expected: number;
 }
 
-export type WebCrapStringFormats =
+export type SpyderStringFormats =
     | 'starts_with'
     | 'ends_with'
     | 'includes'
@@ -37,44 +37,44 @@ export type WebCrapStringFormats =
     | 'url'
     | 'slug';
 
-export interface WebCrapCheckStringFormatDef<
-    Format extends WebCrapStringFormats = WebCrapStringFormats
-> extends WebCrapCheckDef {
+export interface SpyderCheckStringFormatDef<
+    Format extends SpyderStringFormats = SpyderStringFormats
+> extends SpyderCheckDef {
     kind: 'string_format';
     format: Format;
     pattern?: RegExp | undefined;
 }
 
-export interface WebCrapCheckStartsWithDef extends WebCrapCheckStringFormatDef<'starts_with'> {
+export interface SpyderCheckStartsWithDef extends SpyderCheckStringFormatDef<'starts_with'> {
     prefix: string;
     caseInsensitive: boolean;
 }
 
-export interface WebCrapCheckEndsWithDef extends WebCrapCheckStringFormatDef<'ends_with'> {
+export interface SpyderCheckEndsWithDef extends SpyderCheckStringFormatDef<'ends_with'> {
     suffix: string;
     caseInsensitive: boolean;
 }
 
-export interface WebCrapCheckIncludesDef extends WebCrapCheckStringFormatDef<'includes'> {
+export interface SpyderCheckIncludesDef extends SpyderCheckStringFormatDef<'includes'> {
     includes: string;
     caseInsensitive: boolean;
 }
 
-// export interface WebCrapCheckLowercaseDef extends WebCrapCheckStringFormatDef<'lowercase'> {}
-// export interface WebCrapCheckUppercaseDef extends WebCrapCheckStringFormatDef<'uppercase'> {}
+// export interface SpyderCheckLowercaseDef extends SpyderCheckStringFormatDef<'lowercase'> {}
+// export interface SpyderCheckUppercaseDef extends SpyderCheckStringFormatDef<'uppercase'> {}
 
-export interface WebCrapCheckRegexDef extends WebCrapCheckStringFormatDef<'regex'> {
+export interface SpyderCheckRegexDef extends SpyderCheckStringFormatDef<'regex'> {
     pattern: RegExp;
 }
 
-// export interface WebCrapCheckSlugDef extends WebCrapCheckStringFormatDef<'slug'> {}
+// export interface SpyderCheckSlugDef extends SpyderCheckStringFormatDef<'slug'> {}
 
-export class WebCrapCheckMinLength extends WebCrapCheck<string, WebCrapCheckMinLengthDef> {
+export class SpyderCheckMinLength extends SpyderCheck<string, SpyderCheckMinLengthDef> {
     constructor(minimum: number, inclusive = true, abort = false) {
         super({ kind: 'string_min_length', minimum, inclusive, abort });
     }
 
-    public run(payload: WebCrapSchemaPayload<string>): void {
+    public run(payload: SpyderSchemaPayload<string>): void {
         const valid = this._def.inclusive
             ? payload.value.length >= this._def.minimum
             : payload.value.length > this._def.minimum;
@@ -91,12 +91,12 @@ export class WebCrapCheckMinLength extends WebCrapCheck<string, WebCrapCheckMinL
     }
 }
 
-export class WebCrapCheckMaxLength extends WebCrapCheck<string, WebCrapCheckMaxLengthDef> {
+export class SpyderCheckMaxLength extends SpyderCheck<string, SpyderCheckMaxLengthDef> {
     constructor(maximum: number, inclusive = true, abort = false) {
         super({ kind: 'string_max_length', maximum, inclusive, abort });
     }
 
-    public run(payload: WebCrapSchemaPayload<string>): void {
+    public run(payload: SpyderSchemaPayload<string>): void {
         const valid = this._def.inclusive
             ? payload.value.length <= this._def.maximum
             : payload.value.length < this._def.maximum;
@@ -113,7 +113,7 @@ export class WebCrapCheckMaxLength extends WebCrapCheck<string, WebCrapCheckMaxL
     }
 }
 
-export class WebCrapCheckBetweenLength extends WebCrapCheck<string, WebCrapCheckBetweenLengthDef> {
+export class SpyderCheckBetweenLength extends SpyderCheck<string, SpyderCheckBetweenLengthDef> {
     constructor(
         minimum: number,
         maximum: number,
@@ -131,7 +131,7 @@ export class WebCrapCheckBetweenLength extends WebCrapCheck<string, WebCrapCheck
         });
     }
 
-    public run(payload: WebCrapSchemaPayload<string>): void {
+    public run(payload: SpyderSchemaPayload<string>): void {
         const { minInclusive, maxInclusive, minimum, maximum } = this._def;
         const len = payload.value.length;
 
@@ -158,12 +158,12 @@ export class WebCrapCheckBetweenLength extends WebCrapCheck<string, WebCrapCheck
     }
 }
 
-export class WebCrapCheckLengthEquals extends WebCrapCheck<string, WebCrapCheckLengthEqualsDef> {
+export class SpyderCheckLengthEquals extends SpyderCheck<string, SpyderCheckLengthEqualsDef> {
     constructor(expected: number, abort = false) {
         super({ kind: 'string_length_equals', expected, abort });
     }
 
-    public run(payload: WebCrapSchemaPayload<string>): void {
+    public run(payload: SpyderSchemaPayload<string>): void {
         if (payload.value.length === this._def.expected) return;
 
         payload.addIssue({
@@ -175,12 +175,12 @@ export class WebCrapCheckLengthEquals extends WebCrapCheck<string, WebCrapCheckL
     }
 }
 
-export class WebCrapCheckStartsWith extends WebCrapCheck<string, WebCrapCheckStartsWithDef> {
+export class SpyderCheckStartsWith extends SpyderCheck<string, SpyderCheckStartsWithDef> {
     constructor(prefix: string, caseInsensitive = false, abort = false) {
         super({ kind: 'string_format', format: 'starts_with', prefix, caseInsensitive, abort });
     }
 
-    public run(payload: WebCrapSchemaPayload<string>): void {
+    public run(payload: SpyderSchemaPayload<string>): void {
         const value = this._def.caseInsensitive ? payload.value.toLowerCase() : payload.value;
         const prefix = this._def.caseInsensitive
             ? this._def.prefix.toLowerCase()
@@ -199,12 +199,12 @@ export class WebCrapCheckStartsWith extends WebCrapCheck<string, WebCrapCheckSta
     }
 }
 
-export class WebCrapCheckEndsWith extends WebCrapCheck<string, WebCrapCheckEndsWithDef> {
+export class SpyderCheckEndsWith extends SpyderCheck<string, SpyderCheckEndsWithDef> {
     constructor(suffix: string, caseInsensitive = false, abort = false) {
         super({ kind: 'string_format', format: 'ends_with', suffix, caseInsensitive, abort });
     }
 
-    public run(payload: WebCrapSchemaPayload<string>): void {
+    public run(payload: SpyderSchemaPayload<string>): void {
         const value = this._def.caseInsensitive ? payload.value.toLowerCase() : payload.value;
         const suffix = this._def.caseInsensitive
             ? this._def.suffix.toLowerCase()
@@ -223,12 +223,12 @@ export class WebCrapCheckEndsWith extends WebCrapCheck<string, WebCrapCheckEndsW
     }
 }
 
-export class WebCrapCheckIncludes extends WebCrapCheck<string, WebCrapCheckIncludesDef> {
+export class SpyderCheckIncludes extends SpyderCheck<string, SpyderCheckIncludesDef> {
     constructor(includes: string, caseInsensitive = false, abort = false) {
         super({ kind: 'string_format', format: 'includes', includes, caseInsensitive, abort });
     }
 
-    public run(payload: WebCrapSchemaPayload<string>): void {
+    public run(payload: SpyderSchemaPayload<string>): void {
         const value = this._def.caseInsensitive ? payload.value.toLowerCase() : payload.value;
         const includes = this._def.caseInsensitive
             ? this._def.includes.toLowerCase()
@@ -247,15 +247,15 @@ export class WebCrapCheckIncludes extends WebCrapCheck<string, WebCrapCheckInclu
     }
 }
 
-export class WebCrapCheckLowerCase extends WebCrapCheck<
+export class SpyderCheckLowerCase extends SpyderCheck<
     string,
-    WebCrapCheckStringFormatDef<'lowercase'>
+    SpyderCheckStringFormatDef<'lowercase'>
 > {
     constructor(abort = false) {
         super({ kind: 'string_format', format: 'lowercase', abort });
     }
 
-    public run(payload: WebCrapSchemaPayload<string>): void {
+    public run(payload: SpyderSchemaPayload<string>): void {
         if (util.makeRegexTest('lowercase', payload.value)) return;
 
         payload.addIssue({
@@ -267,15 +267,15 @@ export class WebCrapCheckLowerCase extends WebCrapCheck<
     }
 }
 
-export class WebCrapCheckUpperCase extends WebCrapCheck<
+export class SpyderCheckUpperCase extends SpyderCheck<
     string,
-    WebCrapCheckStringFormatDef<'uppercase'>
+    SpyderCheckStringFormatDef<'uppercase'>
 > {
     constructor(abort = false) {
         super({ kind: 'string_format', format: 'uppercase', abort });
     }
 
-    public run(payload: WebCrapSchemaPayload<string>): void {
+    public run(payload: SpyderSchemaPayload<string>): void {
         if (util.makeRegexTest('uppercase', payload.value)) return;
 
         payload.addIssue({
@@ -287,12 +287,12 @@ export class WebCrapCheckUpperCase extends WebCrapCheck<
     }
 }
 
-export class WebCrapCheckRegex extends WebCrapCheck<string, WebCrapCheckRegexDef> {
+export class SpyderCheckRegex extends SpyderCheck<string, SpyderCheckRegexDef> {
     constructor(pattern: RegExp, abort = false) {
         super({ kind: 'string_format', format: 'regex', pattern, abort });
     }
 
-    public run(payload: WebCrapSchemaPayload<string>): void {
+    public run(payload: SpyderSchemaPayload<string>): void {
         if (this._def.pattern.test(payload.value)) return;
 
         payload.addIssue({
@@ -305,12 +305,12 @@ export class WebCrapCheckRegex extends WebCrapCheck<string, WebCrapCheckRegexDef
     }
 }
 
-export class WebCrapCheckUrl extends WebCrapCheck<string, WebCrapCheckStringFormatDef<'url'>> {
+export class SpyderCheckUrl extends SpyderCheck<string, SpyderCheckStringFormatDef<'url'>> {
     constructor(abort = false) {
         super({ kind: 'string_format', format: 'url', abort });
     }
 
-    public run(payload: WebCrapSchemaPayload<string>): void {
+    public run(payload: SpyderSchemaPayload<string>): void {
         if (URL.canParse(payload.value)) return;
 
         payload.addIssue({
@@ -322,12 +322,12 @@ export class WebCrapCheckUrl extends WebCrapCheck<string, WebCrapCheckStringForm
     }
 }
 
-export class WebCrapCheckSlug extends WebCrapCheck<string, WebCrapCheckStringFormatDef<'slug'>> {
+export class SpyderCheckSlug extends SpyderCheck<string, SpyderCheckStringFormatDef<'slug'>> {
     constructor(abort = false) {
         super({ kind: 'string_format', format: 'slug', abort });
     }
 
-    public run(payload: WebCrapSchemaPayload<string>): void {
+    public run(payload: SpyderSchemaPayload<string>): void {
         if (util.slugify(payload.value) === payload.value) return;
 
         payload.addIssue({

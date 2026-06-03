@@ -1,8 +1,8 @@
-import type { WebCrapExpectedType, WebCrapIssue } from "./errors";
-import type * as util from "../utils";
+import type { SpyderExpectedType, SpyderIssue } from './errors';
+import type * as util from '../utils';
 
-export class WebCrapSchemaPayload<Value = unknown> {
-    public readonly issues: WebCrapIssue[];
+export class SpyderSchemaPayload<Value = unknown> {
+    public readonly issues: SpyderIssue[];
     public readonly path: PropertyKey[];
     public value: Value;
 
@@ -16,11 +16,11 @@ export class WebCrapSchemaPayload<Value = unknown> {
         return this.issues.length > 0;
     }
 
-    public addIssue(issue: util.DistributiveOmit<WebCrapIssue, 'path'>): void {
+    public addIssue(issue: util.DistributiveOmit<SpyderIssue, 'path'>): void {
         this.issues.push(this._createIssue(issue));
     }
 
-    public addInvalidTypeIssue(expected: WebCrapExpectedType, received: util.ParsedTypes): void {
+    public addInvalidTypeIssue(expected: SpyderExpectedType, received: util.ParsedTypes): void {
         this.addIssue({
             code: 'invalid_type',
             message: `Expected a value of type ${expected}, received ${received}`,
@@ -29,7 +29,7 @@ export class WebCrapSchemaPayload<Value = unknown> {
         });
     }
 
-    private _createIssue(issue: util.DistributiveOmit<WebCrapIssue, 'path'>): WebCrapIssue {
+    private _createIssue(issue: util.DistributiveOmit<SpyderIssue, 'path'>): SpyderIssue {
         return { ...issue, path: this.path };
     }
 }

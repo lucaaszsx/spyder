@@ -1,7 +1,7 @@
-import type { WebCrapStringFormats } from './checks/string';
+import type { SpyderStringFormats } from './checks/string';
 import type * as util from '../utils';
 
-export interface WebCrapIssueBase {
+export interface SpyderIssueBase {
     readonly code: string;
     readonly path: PropertyKey[];
     readonly message: string;
@@ -9,7 +9,7 @@ export interface WebCrapIssueBase {
 }
 
 /** Issues */
-export type WebCrapExpectedType =
+export type SpyderExpectedType =
     | 'string'
     | 'number'
     | 'int'
@@ -22,80 +22,80 @@ export type WebCrapExpectedType =
     | 'undefined'
     | 'never';
 
-export interface WebCrapIssueInvalidType<Input = unknown> extends WebCrapIssueBase {
+export interface SpyderIssueInvalidType<Input = unknown> extends SpyderIssueBase {
     readonly code: 'invalid_type';
-    readonly expected: WebCrapExpectedType;
+    readonly expected: SpyderExpectedType;
     readonly received: util.ParsedTypes;
     readonly input?: Input;
 }
 
-export interface WebCrapIssueTooSmall<Input = unknown> extends WebCrapIssueBase {
+export interface SpyderIssueTooSmall<Input = unknown> extends SpyderIssueBase {
     readonly code: 'too_small';
     readonly minimum: number;
     readonly inclusive: boolean;
     readonly input?: Input;
 }
 
-export interface WebCrapIssueTooBig<Input = unknown> extends WebCrapIssueBase {
+export interface SpyderIssueTooBig<Input = unknown> extends SpyderIssueBase {
     readonly code: 'too_big';
     readonly maximum: number;
     readonly inclusive: boolean;
     readonly input?: Input;
 }
 
-export interface WebCrapIssueInvalidLength<Input = unknown> extends WebCrapIssueBase {
+export interface SpyderIssueInvalidLength<Input = unknown> extends SpyderIssueBase {
     readonly code: 'invalid_length';
     readonly expected: number;
     readonly input?: Input;
 }
 
-export interface WebCrapIssueInvalidStringFormat extends WebCrapIssueBase {
+export interface SpyderIssueInvalidStringFormat extends SpyderIssueBase {
     readonly code: 'invalid_format';
-    readonly format: WebCrapStringFormats;
+    readonly format: SpyderStringFormats;
     readonly pattern?: string;
     readonly input?: string;
 }
 
-export interface WebCrapIssueStringCommonFormats extends WebCrapIssueInvalidStringFormat {
-    format: Exclude<WebCrapStringFormats, 'regex' | 'starts_with' | 'ends_with' | 'includes'>;
+export interface SpyderIssueStringCommonFormats extends SpyderIssueInvalidStringFormat {
+    format: Exclude<SpyderStringFormats, 'regex' | 'starts_with' | 'ends_with' | 'includes'>;
 }
 
-export interface WebCrapIssueStringStartsWith extends WebCrapIssueInvalidStringFormat {
+export interface SpyderIssueStringStartsWith extends SpyderIssueInvalidStringFormat {
     format: 'starts_with';
     prefix: string;
     caseInsensitive: boolean;
 }
 
-export interface WebCrapIssueStringEndsWith extends WebCrapIssueInvalidStringFormat {
+export interface SpyderIssueStringEndsWith extends SpyderIssueInvalidStringFormat {
     format: 'ends_with';
     suffix: string;
     caseInsensitive: boolean;
 }
 
-export interface WebCrapIssueStringIncludes extends WebCrapIssueInvalidStringFormat {
+export interface SpyderIssueStringIncludes extends SpyderIssueInvalidStringFormat {
     format: 'includes';
     includes: string;
     caseInsensitive: boolean;
 }
 
-export interface WebCrapIssueStringInvalidRegex extends WebCrapIssueInvalidStringFormat {
+export interface SpyderIssueStringInvalidRegex extends SpyderIssueInvalidStringFormat {
     format: 'regex';
     pattern: string;
 }
 
 /** Utility types */
-export type WebCrapStringFormatIssues =
-    | WebCrapIssueStringCommonFormats
-    | WebCrapIssueStringInvalidRegex
-    | WebCrapIssueStringStartsWith
-    | WebCrapIssueStringEndsWith
-    | WebCrapIssueStringIncludes;
+export type SpyderStringFormatIssues =
+    | SpyderIssueStringCommonFormats
+    | SpyderIssueStringInvalidRegex
+    | SpyderIssueStringStartsWith
+    | SpyderIssueStringEndsWith
+    | SpyderIssueStringIncludes;
 
-export type WebCrapIssue =
-    | WebCrapIssueInvalidType
-    | WebCrapIssueInvalidLength
-    | WebCrapStringFormatIssues
-    | WebCrapIssueTooSmall
-    | WebCrapIssueTooBig;
+export type SpyderIssue =
+    | SpyderIssueInvalidType
+    | SpyderIssueInvalidLength
+    | SpyderStringFormatIssues
+    | SpyderIssueTooSmall
+    | SpyderIssueTooBig;
 
-export type WebCrapIssueCode = WebCrapIssue['code'];
+export type SpyderIssueCode = SpyderIssue['code'];

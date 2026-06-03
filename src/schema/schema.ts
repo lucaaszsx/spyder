@@ -1,31 +1,31 @@
-import type { WebCrapCheck } from './checks/base';
-import { WebCrapSchemaPayload } from './payload';
+import type { SpyderCheck } from './checks/base';
+import { SpyderSchemaPayload } from './payload';
 import * as util from '../utils';
 
-interface WebCrapTransformStep {
+interface SpyderTransformStep {
     kind: 'transform';
     tx: (value: unknown) => unknown;
 }
 
-interface WebCrapCheckStep {
+interface SpyderCheckStep {
     kind: 'check';
-    check: WebCrapCheck<unknown>;
+    check: SpyderCheck<unknown>;
 }
 
-export type WebCrapStep = WebCrapTransformStep | WebCrapCheckStep;
+export type SpyderStep = SpyderTransformStep | SpyderCheckStep;
 
-export interface WebCrapSchemaDef {
-    steps: WebCrapStep[];
+export interface SpyderSchemaDef {
+    steps: SpyderStep[];
     hasCatch: boolean;
     catchValue?: unknown;
-    innerSchema: WebCrapSchema<unknown> | null;
+    innerSchema: SpyderSchema<unknown> | null;
 }
 
-export abstract class WebCrapSchema<O> {
+export abstract class SpyderSchema<O> {
     declare readonly _output: O;
-    readonly _def: WebCrapSchemaDef;
+    readonly _def: SpyderSchemaDef;
 
-    constructor(innerSchema: WebCrapSchema<unknown> | null = null) {
+    constructor(innerSchema: SpyderSchema<unknown> | null = null) {
         this._def = {
             steps: [],
             hasCatch: false,
@@ -35,7 +35,7 @@ export abstract class WebCrapSchema<O> {
 
     public parse(rawValue: unknown): O {
         let value: unknown = rawValue;
-        const payload = this._parse(new WebCrapSchemaPayload<unknown>([], value));
+        const payload = this._parse(new SpyderSchemaPayload<unknown>([], value));
 
         if (!payload.hasIssues) {
             stepLoop: for (const step of this._def.steps) {
@@ -76,11 +76,9 @@ export abstract class WebCrapSchema<O> {
         return clone;
     }
 
-    protected abstract _parse(
-        payload: WebCrapSchemaPayload<unknown>
-    ): WebCrapSchemaPayload<unknown>;
+    protected abstract _parse(payload: SpyderSchemaPayload<unknown>): SpyderSchemaPayload<unknown>;
 
-    protected _addCheck(check: WebCrapCheck<unknown>): this {
+    protected _addCheck(check: SpyderCheck<unknown>): this {
         const clone = this._clone();
         clone._def.steps.push({ kind: 'check', check });
 
@@ -102,4 +100,4 @@ export abstract class WebCrapSchema<O> {
     }
 }
 
-export type Infer<T extends WebCrapSchema<unknown>> = T['_output'];
+export type Infer<T extends SpyderSchema<unknown>> = T['_output'];

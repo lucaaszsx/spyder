@@ -1,22 +1,22 @@
 import {
-    WebCrapCheckBetweenLength,
-    WebCrapCheckLengthEquals,
-    WebCrapCheckStartsWith,
-    WebCrapCheckMaxLength,
-    WebCrapCheckMinLength,
-    WebCrapCheckUpperCase,
-    WebCrapCheckLowerCase,
-    WebCrapCheckEndsWith,
-    WebCrapCheckIncludes,
-    WebCrapCheckRegex,
-    WebCrapCheckSlug,
-    WebCrapCheckUrl
+    SpyderCheckBetweenLength,
+    SpyderCheckLengthEquals,
+    SpyderCheckStartsWith,
+    SpyderCheckMaxLength,
+    SpyderCheckMinLength,
+    SpyderCheckUpperCase,
+    SpyderCheckLowerCase,
+    SpyderCheckEndsWith,
+    SpyderCheckIncludes,
+    SpyderCheckRegex,
+    SpyderCheckSlug,
+    SpyderCheckUrl
 } from '../checks/string';
-import type { WebCrapSchemaPayload } from '../payload';
-import { WebCrapSchema } from '../schema';
+import type { SpyderSchemaPayload } from '../payload';
+import { SpyderSchema } from '../schema';
 import * as util from '../../utils';
 
-export class WebCrapStringSchema extends WebCrapSchema<string> {
+export class SpyderStringSchema extends SpyderSchema<string> {
     public trim(): this {
         return this._addTransform((v) => v.trim());
     }
@@ -42,11 +42,11 @@ export class WebCrapStringSchema extends WebCrapSchema<string> {
     }
 
     public min(minimum: number, inclusive?: boolean, abort?: boolean): this {
-        return this._addCheck(new WebCrapCheckMinLength(minimum, inclusive, abort));
+        return this._addCheck(new SpyderCheckMinLength(minimum, inclusive, abort));
     }
 
     public max(maximum: number, inclusive?: boolean, abort?: boolean): this {
-        return this._addCheck(new WebCrapCheckMaxLength(maximum, inclusive, abort));
+        return this._addCheck(new SpyderCheckMaxLength(maximum, inclusive, abort));
     }
 
     public between(
@@ -57,12 +57,12 @@ export class WebCrapStringSchema extends WebCrapSchema<string> {
         abort?: boolean
     ): this {
         return this._addCheck(
-            new WebCrapCheckBetweenLength(minimum, maximum, minInclusive, maxInclusive, abort)
+            new SpyderCheckBetweenLength(minimum, maximum, minInclusive, maxInclusive, abort)
         );
     }
 
     public length(expected: number, abort?: boolean): this {
-        return this._addCheck(new WebCrapCheckLengthEquals(expected, abort));
+        return this._addCheck(new SpyderCheckLengthEquals(expected, abort));
     }
 
     public nonempty(abort?: boolean): this {
@@ -70,38 +70,38 @@ export class WebCrapStringSchema extends WebCrapSchema<string> {
     }
 
     public startsWith(prefix: string, caseInsensitive?: boolean, abort?: boolean): this {
-        return this._addCheck(new WebCrapCheckStartsWith(prefix, caseInsensitive, abort));
+        return this._addCheck(new SpyderCheckStartsWith(prefix, caseInsensitive, abort));
     }
 
     public endsWith(suffix: string, caseInsensitive?: boolean, abort?: boolean): this {
-        return this._addCheck(new WebCrapCheckEndsWith(suffix, caseInsensitive, abort));
+        return this._addCheck(new SpyderCheckEndsWith(suffix, caseInsensitive, abort));
     }
 
     public includes(includes: string, caseInsensitive?: boolean, abort?: boolean): this {
-        return this._addCheck(new WebCrapCheckIncludes(includes, caseInsensitive, abort));
+        return this._addCheck(new SpyderCheckIncludes(includes, caseInsensitive, abort));
     }
 
     public lowercase(abort?: boolean): this {
-        return this._addCheck(new WebCrapCheckLowerCase(abort));
+        return this._addCheck(new SpyderCheckLowerCase(abort));
     }
 
     public uppercase(abort?: boolean): this {
-        return this._addCheck(new WebCrapCheckUpperCase(abort));
+        return this._addCheck(new SpyderCheckUpperCase(abort));
     }
 
     public regex(pattern: RegExp, abort?: boolean): this {
-        return this._addCheck(new WebCrapCheckRegex(pattern, abort));
+        return this._addCheck(new SpyderCheckRegex(pattern, abort));
     }
 
     public url(abort?: boolean): this {
-        return this._addCheck(new WebCrapCheckUrl(abort));
+        return this._addCheck(new SpyderCheckUrl(abort));
     }
 
     public slug(abort?: boolean): this {
-        return this._addCheck(new WebCrapCheckSlug(abort));
+        return this._addCheck(new SpyderCheckSlug(abort));
     }
 
-    protected _parse(payload: WebCrapSchemaPayload<string>): WebCrapSchemaPayload<string> {
+    protected _parse(payload: SpyderSchemaPayload<string>): SpyderSchemaPayload<string> {
         if (typeof payload.value !== 'string')
             payload.addInvalidTypeIssue('string', util.getParsedType(payload.value));
 
