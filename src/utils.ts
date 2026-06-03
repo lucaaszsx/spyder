@@ -3,6 +3,7 @@ export type DistributiveOmit<T, K extends PropertyKey> = T extends unknown ? Omi
 export type ParsedTypes =
     | 'string'
     | 'number'
+    | 'NaN'
     | 'bigint'
     | 'boolean'
     | 'symbol'
@@ -35,12 +36,14 @@ export function getParsedType(value: unknown): ParsedTypes {
     switch (type) {
         case 'undefined':
         case 'string':
-        case 'number':
         case 'boolean':
         case 'function':
         case 'bigint':
         case 'symbol':
             return type;
+
+        case 'number':
+            return Number.isNaN(value) ? 'NaN' : 'number';
 
         case 'object':
             if (value === null) return 'null';
