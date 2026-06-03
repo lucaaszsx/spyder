@@ -18,6 +18,8 @@ export type ParsedTypes =
     | 'null'
     | 'promise';
 
+export type Stringable = string | number | boolean | { toString(): string };
+
 export const REGEX_PATTERNS = {
     uppercase: /^[^a-z]*$/,
     lowercase: /^[^A-Z]*$/
@@ -125,6 +127,28 @@ export function deepClone(obj: unknown): unknown {
         },
         {} as Record<string, unknown>
     );
+}
+
+/**
+ * Replaces `{{key}}` placeholders in a message string with the corresponding values.
+ *
+ * @example
+ * replacePlaceholders('Hello, {{name}}', { name: 'John' });
+ * // Output: "Hello, John"
+ */
+export function replacePlaceholders(
+    message: string,
+    placeholders: Record<string, Stringable>
+): string {
+    return message.replace(/{{(.*?)}}/g, (_, key: string): string => {
+        const replacement = placeholders[key.trim()];
+        if (replacement == null)
+            throw new Error(
+                `Placeholder key "${key}" doesn't exists on placeholders: ${Object.keys(placeholders).join(', ')}`
+            );
+
+        return String(replacement);
+    });
 }
 
 export const isDefined = <T>(value: T): value is NonNullable<T> =>

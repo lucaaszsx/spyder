@@ -1,13 +1,12 @@
-import type { SpyderExpectedType, SpyderIssue, SpyderIssueInvalidType } from './errors';
-import type * as util from '../utils';
+import type { SpyderExpectedType, SpyderIssue } from './errors';
+import * as util from '../utils';
 
 export class SpyderSchemaPayload<Value = unknown> {
-    public readonly issues: SpyderIssue[];
-    public readonly path: PropertyKey[];
+    public readonly issues: SpyderIssue[] = [];
+    public readonly path: readonly PropertyKey[];
     public value: Value;
 
     constructor(path: PropertyKey[], value: Value) {
-        this.issues = [];
         this.path = path;
         this.value = value;
     }
@@ -20,18 +19,44 @@ export class SpyderSchemaPayload<Value = unknown> {
         this.issues.push(this._createIssue(issue));
     }
 
-    public addInvalidTypeIssue<Input = unknown>(
-        input: Input,
-        expected: SpyderExpectedType,
-        received: util.ParsedTypes
-    ): void {
+    public addInvalidTypeIssue(expected: SpyderExpectedType, received: util.ParsedTypes): void {
         this.addIssue({
             code: 'invalid_type',
             message: `Expected a value of type ${expected}, received ${received}`,
             expected,
             received,
-            input
-        } satisfies util.DistributiveOmit<SpyderIssueInvalidType<Input>, 'path'>);
+            input: this.value
+        });
+    }
+
+    public addTooSmallIssue(
+        message: string,
+        received: number,
+        minimum: number,
+        inclusive: boolean
+    ): void {
+        this.addIssue({
+            code: 'too_small',
+            message: util.replacePlaceholders(message, { received, minimum }),
+            minimum,
+            inclusive,
+            input: this.value
+        });
+    }
+
+    public addTooBigIssue(
+        message: string,
+        received: number,
+        maximum: number,
+        inclusive: boolean
+    ): void {
+        this.addIssue({
+            code: 'too_big',
+            message: util.replacePlaceholders(message, { received, maximum }),
+            maximum,
+            inclusive,
+            input: this.value
+        });
     }
 
     private _createIssue(issue: util.DistributiveOmit<SpyderIssue, 'path'>): SpyderIssue {
