@@ -115,6 +115,20 @@ export class SpyderNumberSchema extends SpyderSchema<number> {
     }
 }
 
+export class SpyderIntSchema extends SpyderNumberSchema {
+    protected override get minValue(): number {
+        return Number.MIN_SAFE_INTEGER;
+    }
+
+    protected override get maxValue(): number {
+        return Number.MAX_SAFE_INTEGER;
+    }
+
+    constructor(coerce?: boolean, innerSchema?: SpyderSchema<unknown> | null) {
+        super(false, coerce, innerSchema);
+    }
+}
+
 export class SpyderNaNSchema extends SpyderSchema<number> {
     protected _parse(
         _def: SpyderSchemaDef,
