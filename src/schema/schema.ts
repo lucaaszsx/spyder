@@ -2,47 +2,47 @@ import type { SpyderCheck } from './checks/base';
 import { SpyderSchemaPayload } from './payload';
 import * as util from '../utils';
 
-interface SpyderTransformStep {
+interface SpyderSchemaTransformStep {
     kind: 'transform';
     tx: (value: unknown) => unknown;
 }
 
-interface SpyderCheckStep {
+interface SpyderSchemaCheckStep {
     kind: 'check';
     check: SpyderCheck<unknown>;
 }
 
-export type SpyderStep = SpyderTransformStep | SpyderCheckStep;
+export type SpyderSchemaStep = SpyderSchemaTransformStep | SpyderSchemaCheckStep;
 
 export interface SpyderSchemaDef {
-    steps: SpyderStep[];
+    steps: SpyderSchemaStep[];
     hasCatch: boolean;
     catchValue?: unknown;
     innerSchema: SpyderSchema<unknown> | null;
+    coerce: boolean;
 }
 
 export abstract class SpyderSchema<O> {
     declare readonly _output: O;
     readonly _def: SpyderSchemaDef;
 
-    constructor(innerSchema: SpyderSchema<unknown> | null = null) {
+    constructor(coerce = false, innerSchema: SpyderSchema<unknown> | null = null) {
         this._def = {
             steps: [],
             hasCatch: false,
-            innerSchema
+            innerSchema,
+            coerce
         };
     }
 
     public parse(rawValue: unknown): O {
-        let value: unknown = rawValue;
-        const payload = this._parse(new SpyderSchemaPayload<unknown>([], value));
+        const payload = this._parse(this._def, new SpyderSchemaPayload<unknown>([], rawValue));
 
         if (!payload.hasIssues) {
             stepLoop: for (const step of this._def.steps) {
                 switch (step.kind) {
                     case 'transform':
-                        value = step.tx(value);
-                        payload.value = value;
+                        payload.value = step.tx(payload.value);
                         break;
 
                     case 'check':
@@ -59,13 +59,15 @@ export abstract class SpyderSchema<O> {
         if (payload.hasIssues) {
             if (this._def.hasCatch) return this._def.catchValue as O;
 
-            const err = new Error(`One or more issues found when parsing value: ${String(value)}`);
+            const err = new Error(
+                `One or more issues found when parsing value: ${String(payload.value)}`
+            );
             Object.assign(err, { issues: payload.issues });
 
             throw err;
         }
 
-        return value as O;
+        return payload.value as O;
     }
 
     public catch(value: O): this {
@@ -76,7 +78,10 @@ export abstract class SpyderSchema<O> {
         return clone;
     }
 
-    protected abstract _parse(payload: SpyderSchemaPayload<unknown>): SpyderSchemaPayload<unknown>;
+    protected abstract _parse(
+        def: SpyderSchemaDef,
+        payload: SpyderSchemaPayload<unknown>
+    ): SpyderSchemaPayload<unknown>;
 
     protected _addCheck(check: SpyderCheck<unknown>): this {
         const clone = this._clone();
