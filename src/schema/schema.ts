@@ -1,4 +1,5 @@
-import type { WebCrapCheck, WebCrapCheckPayload } from './checks/base';
+import type { WebCrapCheck } from './checks/base';
+import { WebCrapSchemaPayload } from './payload';
 import * as util from '../utils';
 
 interface WebCrapTransformStep {

@@ -1,14 +1,8 @@
-import type { WebCrapIssue } from '../errors';
+import type { WebCrapSchemaPayload } from "../payload";
 
 export interface WebCrapCheckDef {
     kind: string;
     abort: boolean;
-}
-
-export interface WebCrapCheckPayload<Value> {
-    value: Value;
-    issues: WebCrapIssue[];
-    path: PropertyKey[];
 }
 
 export abstract class WebCrapCheck<T, D extends WebCrapCheckDef = WebCrapCheckDef> {
@@ -26,5 +20,5 @@ export abstract class WebCrapCheck<T, D extends WebCrapCheckDef = WebCrapCheckDe
         return !!this._def.abort;
     }
 
-    abstract run(payload: WebCrapCheckPayload<T>): void;
+    abstract run(payload: WebCrapSchemaPayload<T>): void;
 }

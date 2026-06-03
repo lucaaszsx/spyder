@@ -12,6 +12,7 @@ import {
     WebCrapCheckSlug,
     WebCrapCheckUrl
 } from '../checks/string';
+import type { WebCrapSchemaPayload } from '../payload';
 import { WebCrapSchema } from '../schema';
 import * as util from '../../utils';
 
