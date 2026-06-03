@@ -1,4 +1,5 @@
 import {
+    SpyderNumberCheckFinite,
     SpyderNumberCheckMaxValue,
     SpyderNumberCheckMinValue,
     SpyderNumberCheckMultipleOf
@@ -8,6 +9,23 @@ import type { SpyderSchemaPayload } from '../payload';
 import * as util from '../../utils';
 
 export class SpyderNumberSchema extends SpyderSchema<number> {
+    protected get minValue(): number {
+        return Number.NEGATIVE_INFINITY;
+    }
+
+    protected get maxValue(): number {
+        return Number.POSITIVE_INFINITY;
+    }
+
+    constructor(
+        setFiniteCheck = true,
+        coerce?: boolean,
+        innerSchema?: SpyderSchema<unknown> | null
+    ) {
+        super(coerce, innerSchema);
+        if (setFiniteCheck) this.finite(true);
+    }
+
     public min(minimum: number, inclusive?: boolean, abort?: boolean): this {
         return this._addCheck(new SpyderNumberCheckMinValue(minimum, inclusive, abort));
     }
@@ -18,6 +36,10 @@ export class SpyderNumberSchema extends SpyderSchema<number> {
 
     public multipleOf(divisor: number, abort?: boolean): this {
         return this._addCheck(new SpyderNumberCheckMultipleOf(divisor, abort));
+    }
+
+    public finite(abort?: boolean): this {
+        return this._addCheck(new SpyderNumberCheckFinite(abort));
     }
 
     public gt(minimum: number, abort?: boolean): this {
@@ -50,10 +72,6 @@ export class SpyderNumberSchema extends SpyderSchema<number> {
 
     public nonnegative(abort?: boolean): this {
         return this.gte(0, abort);
-    }
-
-    public finite(abort?: boolean): this {
-        return this.lt(Number.POSITIVE_INFINITY, abort);
     }
 
     protected _parse(
