@@ -13,6 +13,10 @@ export interface SpyderNumberCheckMaxValueDef extends SpyderCheckDef {
     inclusive: boolean;
 }
 
+export interface SpyderNumberCheckFiniteDef extends SpyderCheckDef {
+    kind: 'number_finite';
+}
+
 export interface SpyderNumberCheckMultipleOfDef extends SpyderCheckDef {
     kind: 'number_multiple_of';
     divisor: number;
@@ -53,6 +57,22 @@ export class SpyderNumberCheckMaxValue extends SpyderCheck<number, SpyderNumberC
             maximum,
             inclusive
         );
+    }
+}
+
+export class SpyderNumberCheckFinite extends SpyderCheck<number, SpyderNumberCheckFiniteDef> {
+    constructor(abort = false) {
+        super({ kind: 'number_finite', abort });
+    }
+
+    public run(payload: SpyderSchemaPayload<number>): void {
+        if (Number.isFinite(payload.value)) return;
+
+        payload.addIssue({
+            code: 'not_finite',
+            message: 'Provided value is not a finite number',
+            input: payload.value
+        });
     }
 }
 

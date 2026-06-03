@@ -38,6 +38,11 @@ export interface SpyderIssueInvalidLength<Input = unknown> extends SpyderIssueBa
     readonly input: Input;
 }
 
+export interface SpyderIssueNotFinite extends SpyderIssueBase {
+    readonly code: 'not_finite';
+    readonly input: number;
+}
+
 export interface SpyderIssueNotMultipleOf extends SpyderIssueBase {
     readonly code: 'not_multiple_of';
     readonly divisor: number;
@@ -89,6 +94,7 @@ export type SpyderStringFormatIssues =
 export type SpyderIssue =
     | SpyderIssueInvalidType
     | SpyderIssueInvalidLength
+    | SpyderIssueNotFinite
     | SpyderIssueNotMultipleOf
     | SpyderStringFormatIssues
     | SpyderIssueTooSmall
