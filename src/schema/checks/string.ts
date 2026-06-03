@@ -75,19 +75,16 @@ export class SpyderCheckMinLength extends SpyderCheck<string, SpyderCheckMinLeng
     }
 
     public run(payload: SpyderSchemaPayload<string>): void {
-        const valid = this._def.inclusive
-            ? payload.value.length >= this._def.minimum
-            : payload.value.length > this._def.minimum;
+        const { minimum, inclusive } = this._def;
+        const len = payload.value.length;
+        if (inclusive ? len >= minimum : len > minimum) return;
 
-        if (valid) return;
-
-        payload.addIssue({
-            code: 'too_small',
-            message: `Expected at least ${this._def.minimum} characters, got ${payload.value.length}`,
-            minimum: this._def.minimum,
-            inclusive: this._def.inclusive,
-            input: payload.value
-        });
+        payload.addTooSmallIssue(
+            `Expected at least {{minimum}} characters, got {{received}}`,
+            len,
+            minimum,
+            inclusive
+        );
     }
 }
 
@@ -97,19 +94,16 @@ export class SpyderCheckMaxLength extends SpyderCheck<string, SpyderCheckMaxLeng
     }
 
     public run(payload: SpyderSchemaPayload<string>): void {
-        const valid = this._def.inclusive
-            ? payload.value.length <= this._def.maximum
-            : payload.value.length < this._def.maximum;
+        const { maximum, inclusive } = this._def;
+        const len = payload.value.length;
+        if (inclusive ? len <= maximum : len < maximum) return;
 
-        if (valid) return;
-
-        payload.addIssue({
-            code: 'too_big',
-            message: `Expected at most ${this._def.maximum} characters, got ${payload.value.length}`,
-            maximum: this._def.maximum,
-            inclusive: this._def.inclusive,
-            input: payload.value
-        });
+        payload.addTooBigIssue(
+            `Expected at most {{maximum}} characters, got {{received}}`,
+            len,
+            maximum,
+            inclusive
+        );
     }
 }
 
@@ -132,29 +126,10 @@ export class SpyderCheckBetweenLength extends SpyderCheck<string, SpyderCheckBet
     }
 
     public run(payload: SpyderSchemaPayload<string>): void {
-        const { minInclusive, maxInclusive, minimum, maximum } = this._def;
-        const len = payload.value.length;
+        const { minInclusive, maxInclusive, minimum, maximum, abort } = this._def;
 
-        const tooSmall = minInclusive ? len < minimum : len <= minimum;
-        const tooBig = maxInclusive ? len > maximum : len >= maximum;
-
-        if (tooSmall)
-            payload.addIssue({
-                code: 'too_small',
-                message: `Expected at least ${minimum} characters, got ${len}`,
-                minimum,
-                inclusive: minInclusive,
-                input: payload.value
-            });
-
-        if (tooBig)
-            payload.addIssue({
-                code: 'too_big',
-                message: `Expected at most ${maximum} characters, got ${len}`,
-                maximum,
-                inclusive: maxInclusive,
-                input: payload.value
-            });
+        new SpyderCheckMinLength(minimum, minInclusive, abort).run(payload);
+        new SpyderCheckMaxLength(maximum, maxInclusive, abort).run(payload);
     }
 }
 
