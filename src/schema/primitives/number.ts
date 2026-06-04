@@ -191,14 +191,24 @@ export class SpyderBigIntSchema extends SpyderRangeableNumericSchema<bigint> {
     }
 
     private _canCoerce(value: unknown): value is string | number | bigint | boolean {
-        const typeOf = typeof value;
+        switch (typeof value) {
+            case 'bigint':
+            case 'boolean':
+                return true;
 
-        return (
-            typeOf === 'string' ||
-            typeOf === 'number' ||
-            typeOf === 'bigint' ||
-            typeOf === 'boolean'
-        );
+            case 'number':
+            case 'string': {
+                const numeric = Number(value);
+
+                return !isNaN(numeric) && Number.isInteger(numeric);
+            }
+
+            case 'symbol':
+            case 'undefined':
+            case 'object':
+            case 'function':
+                return false;
+        }
     }
 }
 
@@ -211,6 +221,6 @@ export class SpyderNaNSchema extends SpyderBaseNumericSchema<number> {
     }
 
     protected _isValidTypeOf(value: unknown): value is number {
-        return typeof value === 'number' && isNaN(value);
+        return Number.isNaN(value);
     }
 }
