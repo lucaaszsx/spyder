@@ -9,11 +9,11 @@ import type { SpyderSchemaPayload } from '../payload';
 import * as util from '../../utils';
 
 export class SpyderNumberSchema extends SpyderSchema<number> {
-    protected get minValue(): number {
+    public get minValue(): number {
         return Number.NEGATIVE_INFINITY;
     }
 
-    protected get maxValue(): number {
+    public get maxValue(): number {
         return Number.POSITIVE_INFINITY;
     }
 
@@ -116,11 +116,11 @@ export class SpyderNumberSchema extends SpyderSchema<number> {
 }
 
 export class SpyderIntSchema extends SpyderNumberSchema {
-    protected override get minValue(): number {
+    public override get minValue(): number {
         return Number.MIN_SAFE_INTEGER;
     }
 
-    protected override get maxValue(): number {
+    public override get maxValue(): number {
         return Number.MAX_SAFE_INTEGER;
     }
 
