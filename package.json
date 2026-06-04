@@ -3,6 +3,7 @@
     "name": "spyder",
     "description": "A powerful schema-based web scraping library for Node.js built for fast, structured, and reliable data extraction.",
     "private": false,
+    "type": "module",
     "main": "./dist/index.cjs",
     "module": "./dist/index.js",
     "types": "./dist/index.d.ts",
