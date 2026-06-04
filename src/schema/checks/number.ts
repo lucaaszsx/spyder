@@ -1,28 +1,28 @@
 import { type SpyderCheckDef, SpyderCheck } from './base';
 import type { SpyderSchemaPayload } from '../payload';
 
-export interface SpyderNumberCheckMinValueDef extends SpyderCheckDef {
+export interface SpyderCheckMinValueDef extends SpyderCheckDef {
     kind: 'number_min_value';
     minimum: number;
     inclusive: boolean;
 }
 
-export interface SpyderNumberCheckMaxValueDef extends SpyderCheckDef {
+export interface SpyderCheckMaxValueDef extends SpyderCheckDef {
     kind: 'number_max_value';
     maximum: number;
     inclusive: boolean;
 }
 
-export interface SpyderNumberCheckFiniteDef extends SpyderCheckDef {
+export interface SpyderCheckFiniteDef extends SpyderCheckDef {
     kind: 'number_finite';
 }
 
-export interface SpyderNumberCheckMultipleOfDef extends SpyderCheckDef {
+export interface SpyderCheckMultipleOfDef extends SpyderCheckDef {
     kind: 'number_multiple_of';
     divisor: number;
 }
 
-export class SpyderNumberCheckMinValue extends SpyderCheck<number, SpyderNumberCheckMinValueDef> {
+export class SpyderCheckMinValue extends SpyderCheck<number, SpyderCheckMinValueDef> {
     constructor(minimum: number, inclusive = true, abort = false) {
         super({ kind: 'number_min_value', minimum, inclusive, abort });
     }
@@ -41,7 +41,7 @@ export class SpyderNumberCheckMinValue extends SpyderCheck<number, SpyderNumberC
     }
 }
 
-export class SpyderNumberCheckMaxValue extends SpyderCheck<number, SpyderNumberCheckMaxValueDef> {
+export class SpyderCheckMaxValue extends SpyderCheck<number, SpyderCheckMaxValueDef> {
     constructor(maximum: number, inclusive = true, abort = false) {
         super({ kind: 'number_max_value', maximum, inclusive, abort });
     }
@@ -60,7 +60,7 @@ export class SpyderNumberCheckMaxValue extends SpyderCheck<number, SpyderNumberC
     }
 }
 
-export class SpyderNumberCheckFinite extends SpyderCheck<number, SpyderNumberCheckFiniteDef> {
+export class SpyderCheckFinite extends SpyderCheck<number, SpyderCheckFiniteDef> {
     constructor(abort = false) {
         super({ kind: 'number_finite', abort });
     }
@@ -76,10 +76,7 @@ export class SpyderNumberCheckFinite extends SpyderCheck<number, SpyderNumberChe
     }
 }
 
-export class SpyderNumberCheckMultipleOf extends SpyderCheck<
-    number,
-    SpyderNumberCheckMultipleOfDef
-> {
+export class SpyderCheckMultipleOf extends SpyderCheck<number, SpyderCheckMultipleOfDef> {
     constructor(divisor: number, abort = false) {
         super({ kind: 'number_multiple_of', divisor, abort });
     }

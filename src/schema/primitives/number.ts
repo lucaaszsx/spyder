@@ -1,8 +1,8 @@
 import {
-    SpyderNumberCheckFinite,
-    SpyderNumberCheckMaxValue,
-    SpyderNumberCheckMinValue,
-    SpyderNumberCheckMultipleOf
+    SpyderCheckFinite,
+    SpyderCheckMaxValue,
+    SpyderCheckMinValue,
+    SpyderCheckMultipleOf
 } from '../checks/number';
 import { SpyderSchema, type SpyderSchemaDef } from '../schema';
 import type { SpyderSchemaPayload } from '../payload';
@@ -27,19 +27,19 @@ export class SpyderNumberSchema extends SpyderSchema<number> {
     }
 
     public min(minimum: number, inclusive?: boolean, abort?: boolean): this {
-        return this._addCheck(new SpyderNumberCheckMinValue(minimum, inclusive, abort));
+        return this._addCheck(new SpyderCheckMinValue(minimum, inclusive, abort));
     }
 
     public max(maximum: number, inclusive?: boolean, abort?: boolean): this {
-        return this._addCheck(new SpyderNumberCheckMaxValue(maximum, inclusive, abort));
+        return this._addCheck(new SpyderCheckMaxValue(maximum, inclusive, abort));
     }
 
     public multipleOf(divisor: number, abort?: boolean): this {
-        return this._addCheck(new SpyderNumberCheckMultipleOf(divisor, abort));
+        return this._addCheck(new SpyderCheckMultipleOf(divisor, abort));
     }
 
     public finite(abort?: boolean): this {
-        return this._addCheck(new SpyderNumberCheckFinite(abort));
+        return this._addCheck(new SpyderCheckFinite(abort));
     }
 
     public gt(minimum: number, abort?: boolean): this {
