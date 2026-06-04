@@ -24,7 +24,7 @@ export interface SpyderSchemaDef {
 
 export abstract class SpyderSchema<O> {
     declare readonly _output: O;
-    readonly _def: SpyderSchemaDef;
+    _def: SpyderSchemaDef;
 
     constructor(coerce = false, innerSchema: SpyderSchema<unknown> | null = null) {
         this._def = {
@@ -80,10 +80,7 @@ export abstract class SpyderSchema<O> {
         return clone;
     }
 
-    protected abstract _parse(
-        def: SpyderSchemaDef,
-        payload: SpyderSchemaPayload<unknown>
-    ): void;
+    protected abstract _parse(def: SpyderSchemaDef, payload: SpyderSchemaPayload<unknown>): void;
 
     protected _addCheck(check: SpyderCheck<unknown>): this {
         const clone = this._clone();
@@ -101,7 +98,7 @@ export abstract class SpyderSchema<O> {
 
     protected _clone(): this {
         const clone = util.shallowClone(this) as this;
-        clone._def.steps = [...this._def.steps];
+        clone._def = { ...this._def, steps: [...this._def.steps] };
 
         return clone;
     }

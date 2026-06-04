@@ -116,10 +116,7 @@ export function mergeObjects<T extends object = Record<string, unknown>>(
 }
 
 export function createObject(obj: object): unknown {
-    return Object.create(
-        Object.getPrototypeOf(obj) as object | null,
-        Object.getOwnPropertyDescriptors(obj)
-    );
+    return Object.assign(Object.create(Object.getPrototypeOf(obj) as object | null), obj);
 }
 
 export function shallowClone<T extends object>(obj: T | null): T | null {
