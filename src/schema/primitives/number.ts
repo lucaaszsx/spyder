@@ -39,7 +39,7 @@ export abstract class SpyderRangeableNumericSchema<
     }
 
     public multipleOf(divisor: T, abort?: boolean): this {
-        return this._addCheck(new SpyderCheckMultipleOf(divisor, abort));
+        return this._addCheck(new SpyderCheckMultipleOf(divisor, this._zero, abort));
     }
 
     public gt(minimum: T, abort?: boolean): this {

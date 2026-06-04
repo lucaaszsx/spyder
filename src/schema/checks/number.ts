@@ -21,6 +21,7 @@ export interface SpyderCheckFiniteDef extends SpyderCheckDef {
 export interface SpyderCheckMultipleOfDef<T extends util.Numeric> extends SpyderCheckDef {
     kind: 'number_multiple_of';
     divisor: T;
+    zero: T;
 }
 
 export class SpyderCheckMinValue<T extends util.Numeric> extends SpyderCheck<
@@ -71,12 +72,12 @@ export class SpyderCheckMultipleOf<T extends util.Numeric> extends SpyderCheck<
     T,
     SpyderCheckMultipleOfDef<T>
 > {
-    constructor(divisor: T, abort = false) {
-        super({ kind: 'number_multiple_of', divisor, abort });
+    constructor(divisor: T, zero: T, abort = false) {
+        super({ kind: 'number_multiple_of', divisor, zero, abort });
     }
 
     public run(payload: SpyderSchemaPayload<T>): void {
-        if (payload.value % this._def.divisor === 0) return;
+        if (payload.value % this._def.divisor === this._def.zero) return;
 
         payload.issue({
             code: 'not_multiple_of',
