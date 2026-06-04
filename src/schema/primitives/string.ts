@@ -120,11 +120,9 @@ export class SpyderStringSchema extends SpyderSchema<string> {
     protected _parse(
         def: SpyderSchemaDef,
         payload: SpyderSchemaPayload<string>
-    ): SpyderSchemaPayload<string> {
+    ): void {
         if (def.coerce) payload.value = String(payload.value);
         if (typeof payload.value !== 'string')
             payload.invalidType('string', util.getParsedType(payload.value));
-
-        return payload;
     }
 }

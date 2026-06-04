@@ -3,7 +3,7 @@ import type * as util from '../utils';
 
 export interface SpyderIssueBase {
     readonly code: string;
-    readonly path: readonly PropertyKey[];
+    readonly path: readonly PropertyKey[] | null;
     readonly message: string;
     readonly input: unknown;
 }

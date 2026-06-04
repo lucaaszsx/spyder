@@ -37,7 +37,8 @@ export abstract class SpyderSchema<O> {
 
     public parse(rawValue: unknown): O {
         const value = this._def.innerSchema ? this._def.innerSchema.parse(rawValue) : rawValue;
-        const payload = this._parse(this._def, new SpyderSchemaPayload<unknown>([], value));
+        const payload = new SpyderSchemaPayload<unknown>(value);
+        this._parse(this._def, payload);
 
         if (!payload.hasIssues) {
             stepLoop: for (const step of this._def.steps) {
@@ -82,7 +83,7 @@ export abstract class SpyderSchema<O> {
     protected abstract _parse(
         def: SpyderSchemaDef,
         payload: SpyderSchemaPayload<unknown>
-    ): SpyderSchemaPayload<unknown>;
+    ): void;
 
     protected _addCheck(check: SpyderCheck<unknown>): this {
         const clone = this._clone();

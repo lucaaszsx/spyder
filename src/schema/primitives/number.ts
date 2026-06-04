@@ -19,12 +19,10 @@ export abstract class SpyderBaseNumericSchema<T extends util.Numeric> extends Sp
     protected _parse(
         def: SpyderSchemaDef,
         payload: SpyderSchemaPayload<unknown>
-    ): SpyderSchemaPayload<unknown> {
+    ): void {
         if (def.coerce) payload.value = this._coerce(payload.value);
         if (!this._isValidTypeOf(payload.value))
             payload.invalidType(this._expectedType, util.getParsedType(payload.value));
-
-        return payload;
     }
 }
 
@@ -97,9 +95,9 @@ export abstract class SpyderRangeableNumericSchema<
     protected override _parse(
         def: SpyderSchemaDef,
         payload: SpyderSchemaPayload<unknown>
-    ): SpyderSchemaPayload<unknown> {
+    ): void {
         super._parse(def, payload);
-        if (payload.hasIssues) return payload;
+        if (payload.hasIssues) return;
 
         const value = payload.value as T;
         if (this._minValue && value < this._minValue)
@@ -116,8 +114,6 @@ export abstract class SpyderRangeableNumericSchema<
                 this._maxValue,
                 true
             );
-
-        return payload;
     }
 }
 

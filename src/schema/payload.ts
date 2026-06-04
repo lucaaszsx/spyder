@@ -2,21 +2,21 @@ import type { SpyderExpectedType, SpyderIssue } from './errors';
 import * as util from '../utils';
 
 export class SpyderSchemaPayload<Value = unknown> {
-    public readonly issues: SpyderIssue[] = [];
-    public readonly path: readonly PropertyKey[];
+    public issues: SpyderIssue[] | null = null;
     public value: Value;
 
-    constructor(path: PropertyKey[], value: Value) {
-        this.path = path;
+    constructor(value: Value) {
         this.value = value;
     }
 
     public get hasIssues(): boolean {
-        return this.issues.length > 0;
+        return !!this.issues && this.issues.length > 0;
     }
 
     public issue(issue: util.DistributiveOmit<SpyderIssue, 'path'>): void {
-        this.issues.push(this._createIssue(issue));
+        if (!this.issues) this.issues = [];
+
+        this.issues.push({ ...issue, path: null });
     }
 
     public invalidType(expected: SpyderExpectedType, received: util.ParsedTypes): void {
@@ -65,9 +65,5 @@ export class SpyderSchemaPayload<Value = unknown> {
             inclusive,
             input: this.value
         });
-    }
-
-    private _createIssue(issue: util.DistributiveOmit<SpyderIssue, 'path'>): SpyderIssue {
-        return { ...issue, path: this.path };
     }
 }

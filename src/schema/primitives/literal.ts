@@ -17,7 +17,7 @@ export class SpyderLiteralSchema extends SpyderSchema<util.Literal> {
     protected _parse(
         _def: SpyderSchemaDef,
         payload: SpyderSchemaPayload<util.Literal>
-    ): SpyderSchemaPayload<util.Literal> {
+    ): void {
         if (!this.values.includes(payload.value))
             payload.issue({
                 code: 'invalid_value',
@@ -25,7 +25,5 @@ export class SpyderLiteralSchema extends SpyderSchema<util.Literal> {
                 expected: this.values,
                 input: payload.value
             });
-
-        return payload;
     }
 }

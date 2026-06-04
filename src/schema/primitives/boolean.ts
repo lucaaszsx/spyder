@@ -6,11 +6,9 @@ export class SpyderBooleanSchema extends SpyderSchema<boolean> {
     protected _parse(
         def: SpyderSchemaDef,
         payload: SpyderSchemaPayload<boolean>
-    ): SpyderSchemaPayload<boolean> {
+    ): void {
         if (def.coerce) payload.value = Boolean(payload.value);
         if (typeof payload.value !== 'boolean')
             payload.invalidType('boolean', util.getParsedType(payload.value));
-
-        return payload;
     }
 }
