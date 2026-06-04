@@ -18,6 +18,12 @@ export interface SpyderIssueInvalidType<Input = unknown> extends SpyderIssueBase
     readonly input: Input;
 }
 
+export interface SpyderIssueInvalidValue<Input = unknown> extends SpyderIssueBase {
+    readonly code: 'invalud_value';
+    readonly expected: util.PrimitiveArray;
+    readonly input: Input;
+}
+
 export interface SpyderIssueTooSmall<Input = unknown> extends SpyderIssueBase {
     readonly code: 'too_small';
     readonly minimum: number;
@@ -93,6 +99,7 @@ export type SpyderStringFormatIssues =
 
 export type SpyderIssue =
     | SpyderIssueInvalidType
+    | SpyderIssueInvalidValue
     | SpyderIssueInvalidLength
     | SpyderIssueNotFinite
     | SpyderIssueNotMultipleOf

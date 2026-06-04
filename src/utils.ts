@@ -1,5 +1,3 @@
-export type DistributiveOmit<T, K extends PropertyKey> = T extends unknown ? Omit<T, K> : never;
-
 export type ParsedTypes =
     | 'string'
     | 'number'
@@ -18,9 +16,16 @@ export type ParsedTypes =
     | 'nan'
     | 'null'
     | 'promise';
-
+export type Literal = string | number | boolean | bigint | null | undefined;
+export type LiteralArray = Literal[];
+export type Primitive = string | number | symbol | bigint | boolean | null | undefined;
+export type PrimitiveArray = Primitive[];
 export type Stringable = string | number | boolean | { toString(): string };
 
+/** Utility types */
+export type DistributiveOmit<T, K extends PropertyKey> = T extends unknown ? Omit<T, K> : never;
+
+/** Methods */
 export const REGEX_PATTERNS = {
     uppercase: /^[^a-z]*$/,
     lowercase: /^[^A-Z]*$/
@@ -58,6 +63,15 @@ export function getParsedType(value: unknown): ParsedTypes {
         default:
             throw new Error(`Cannot parse type of the provided value`);
     }
+}
+
+export function parsePrimitive(value: unknown): string {
+    if (typeof value === 'string') return `"${value}"`;
+    if (typeof value === 'function')
+        return `[Function${value.name ? `: ${value.name}` : ' (anonymous)'}]`;
+    if (typeof value === 'bigint') return value.toString() + 'n';
+
+    return String(value);
 }
 
 export function slugify(text: string): string {
@@ -135,6 +149,7 @@ export function deepClone(obj: unknown): unknown {
 /**
  * Replaces `{{key}}` placeholders in a message string with the corresponding values.
  *
+ * @throws {Error} - Throws an error when a key doesn't exists on provided placeholders
  * @example
  * replacePlaceholders('Hello, {{name}}', { name: 'John' });
  * // Output: "Hello, John"
