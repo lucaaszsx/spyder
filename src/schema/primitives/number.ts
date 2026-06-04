@@ -6,61 +6,66 @@ import {
 } from '../checks/number';
 import { SpyderSchema, type SpyderSchemaDef } from '../schema';
 import type { SpyderSchemaPayload } from '../payload';
+import type { SpyderExpectedType } from '../errors';
 import * as util from '../../utils';
 
-export class SpyderNumberSchema extends SpyderSchema<number> {
-    public get minValue(): number {
-        return Number.NEGATIVE_INFINITY;
-    }
+export abstract class SpyderBaseNumericSchema<T extends util.Numeric> extends SpyderSchema<T> {
+    public abstract readonly kind: util.NumericSchemaKind;
+    protected abstract readonly _expectedType: SpyderExpectedType;
 
-    public get maxValue(): number {
-        return Number.POSITIVE_INFINITY;
-    }
+    protected abstract _coerce(value: unknown): unknown;
+    protected abstract _isValidTypeOf(value: unknown): value is T;
 
-    constructor(
-        setFiniteCheck = true,
-        coerce?: boolean,
-        innerSchema?: SpyderSchema<unknown> | null
-    ) {
-        super(coerce, innerSchema);
-        if (setFiniteCheck) this.finite(true);
-    }
+    protected _parse(
+        def: SpyderSchemaDef,
+        payload: SpyderSchemaPayload<unknown>
+    ): SpyderSchemaPayload<unknown> {
+        if (def.coerce) payload.value = this._coerce(payload.value);
+        if (!this._isValidTypeOf(payload.value))
+            payload.invalidType(this._expectedType, util.getParsedType(payload.value));
 
-    public min(minimum: number, inclusive?: boolean, abort?: boolean): this {
+        return payload;
+    }
+}
+
+export abstract class SpyderRangeableNumericSchema<
+    T extends util.Numeric
+> extends SpyderBaseNumericSchema<T> {
+    protected abstract readonly _minValue: T | null;
+    protected abstract readonly _maxValue: T | null;
+    protected abstract readonly _zero: T;
+
+    public min(minimum: T, inclusive?: boolean, abort?: boolean): this {
         return this._addCheck(new SpyderCheckMinValue(minimum, inclusive, abort));
     }
 
-    public max(maximum: number, inclusive?: boolean, abort?: boolean): this {
+    public max(maximum: T, inclusive?: boolean, abort?: boolean): this {
         return this._addCheck(new SpyderCheckMaxValue(maximum, inclusive, abort));
     }
 
-    public multipleOf(divisor: number, abort?: boolean): this {
+    public multipleOf(divisor: T, abort?: boolean): this {
         return this._addCheck(new SpyderCheckMultipleOf(divisor, abort));
     }
 
-    public finite(abort?: boolean): this {
-        return this._addCheck(new SpyderCheckFinite(abort));
-    }
-
-    public gt(minimum: number, abort?: boolean): this {
+    public gt(minimum: T, abort?: boolean): this {
         return this.min(minimum, false, abort);
     }
 
-    public gte(minimum: number, abort?: boolean): this {
+    public gte(minimum: T, abort?: boolean): this {
         return this.min(minimum, true, abort);
     }
 
-    public lt(maximum: number, abort?: boolean): this {
+    public lt(maximum: T, abort?: boolean): this {
         return this.max(maximum, false, abort);
     }
 
-    public lte(maximum: number, abort?: boolean): this {
+    public lte(maximum: T, abort?: boolean): this {
         return this.max(maximum, true, abort);
     }
 
     public between(
-        minimum: number,
-        maximum: number,
+        minimum: T,
+        maximum: T,
         minInclusive?: boolean,
         maxInclusive?: boolean,
         abort?: boolean
@@ -74,40 +79,41 @@ export class SpyderNumberSchema extends SpyderSchema<number> {
     }
 
     public positive(abort?: boolean): this {
-        return this.gt(0, abort);
+        return this.gt(this._zero, abort);
     }
 
     public nonpositive(abort?: boolean): this {
-        return this.lte(0, abort);
+        return this.lte(this._zero, abort);
     }
 
     public negative(abort?: boolean): this {
-        return this.lt(0, abort);
+        return this.lt(this._zero, abort);
     }
 
     public nonnegative(abort?: boolean): this {
-        return this.gte(0, abort);
+        return this.gte(this._zero, abort);
     }
 
-    protected _parse(
+    protected override _parse(
         def: SpyderSchemaDef,
-        payload: SpyderSchemaPayload<number>
-    ): SpyderSchemaPayload<number> {
-        if (def.coerce) payload.value = Number(payload.value);
-        if (typeof payload.value !== 'number' || isNaN(payload.value))
-            payload.invalidType('number', util.getParsedType(payload.value));
-        if (payload.value < this.minValue)
+        payload: SpyderSchemaPayload<unknown>
+    ): SpyderSchemaPayload<unknown> {
+        super._parse(def, payload);
+        if (payload.hasIssues) return payload;
+
+        const value = payload.value as T;
+        if (this._minValue && value < this._minValue)
             payload.tooSmall(
                 'The value provided is less than the minimum value of {{minimum}}',
-                payload.value,
-                this.minValue,
+                value,
+                this._minValue,
                 true
             );
-        if (payload.value > this.maxValue)
+        if (this._maxValue && value > this._maxValue)
             payload.tooBig(
                 'The value provided is greater than the maximum value of {{maximum}}',
-                payload.value,
-                this.maxValue,
+                value,
+                this._maxValue,
                 true
             );
 
@@ -115,28 +121,89 @@ export class SpyderNumberSchema extends SpyderSchema<number> {
     }
 }
 
-export class SpyderIntSchema extends SpyderNumberSchema {
-    public override get minValue(): number {
-        return Number.MIN_SAFE_INTEGER;
+export class SpyderNumberSchema extends SpyderRangeableNumericSchema<number> {
+    public readonly kind = 'number';
+    protected readonly _minValue = Number.NEGATIVE_INFINITY;
+    protected readonly _maxValue = Number.POSITIVE_INFINITY;
+    protected readonly _zero = 0;
+    protected readonly _expectedType = 'number';
+
+    constructor(
+        setFiniteCheck = true,
+        coerce?: boolean,
+        innerSchema?: SpyderSchema<unknown> | null
+    ) {
+        super(coerce, innerSchema);
+        if (setFiniteCheck) this.finite(true);
     }
 
-    public override get maxValue(): number {
-        return Number.MAX_SAFE_INTEGER;
+    public finite(abort?: boolean): this {
+        return this._addCheck(new SpyderCheckFinite(abort));
     }
 
-    constructor(coerce?: boolean, innerSchema?: SpyderSchema<unknown> | null) {
-        super(false, coerce, innerSchema);
+    protected _coerce(value: unknown): number {
+        return Number(value);
+    }
+
+    protected _isValidTypeOf(value: unknown): value is number {
+        return typeof value === 'number' && !isNaN(value);
     }
 }
 
-export class SpyderNaNSchema extends SpyderSchema<number> {
-    protected _parse(
-        _def: SpyderSchemaDef,
-        payload: SpyderSchemaPayload<number>
-    ): SpyderSchemaPayload<number> {
-        if (!Number.isNaN(payload.value))
-            payload.invalidType('NaN', util.getParsedType(payload.value));
+export class SpyderIntSchema extends SpyderRangeableNumericSchema<number> {
+    public readonly kind = 'int';
+    protected readonly _minValue = Number.MIN_SAFE_INTEGER;
+    protected readonly _maxValue = Number.MAX_SAFE_INTEGER;
+    protected readonly _zero = 0;
+    protected readonly _expectedType = 'int';
 
-        return payload;
+    protected _coerce(value: unknown): number {
+        return Number(value);
+    }
+
+    protected _isValidTypeOf(value: unknown): value is number {
+        return typeof value === 'number' && !isNaN(value);
+    }
+}
+
+export class SpyderBigIntSchema extends SpyderRangeableNumericSchema<bigint> {
+    public readonly kind = 'bigint';
+    protected readonly _minValue = null;
+    protected readonly _maxValue = null;
+    protected readonly _zero = 0n;
+    protected readonly _expectedType = 'bigint';
+
+    protected _coerce(value: unknown): unknown {
+        if (!this._canCoerce(value)) return value;
+
+        return BigInt(value);
+    }
+
+    protected _isValidTypeOf(value: unknown): value is bigint {
+        return typeof value === 'bigint';
+    }
+
+    private _canCoerce(value: unknown): value is string | number | bigint | boolean {
+        const typeOf = typeof value;
+
+        return (
+            typeOf === 'string' ||
+            typeOf === 'number' ||
+            typeOf === 'bigint' ||
+            typeOf === 'boolean'
+        );
+    }
+}
+
+export class SpyderNaNSchema extends SpyderBaseNumericSchema<number> {
+    public readonly kind = 'NaN';
+    protected readonly _expectedType = 'NaN';
+
+    protected _coerce(value: unknown): unknown {
+        return value;
+    }
+
+    protected _isValidTypeOf(value: unknown): value is number {
+        return typeof value === 'number' && isNaN(value);
     }
 }
