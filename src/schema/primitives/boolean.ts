@@ -9,7 +9,7 @@ export class SpyderBooleanSchema extends SpyderSchema<boolean> {
     ): SpyderSchemaPayload<boolean> {
         if (def.coerce) payload.value = Boolean(payload.value);
         if (typeof payload.value !== 'boolean')
-            payload.addInvalidTypeIssue('boolean', util.getParsedType(payload.value));
+            payload.invalidType('boolean', util.getParsedType(payload.value));
 
         return payload;
     }

@@ -19,7 +19,7 @@ export class SpyderLiteralSchema extends SpyderSchema<util.Literal> {
         payload: SpyderSchemaPayload<util.Literal>
     ): SpyderSchemaPayload<util.Literal> {
         if (!this.values.includes(payload.value))
-            payload.addIssue({
+            payload.issue({
                 code: 'invalid_value',
                 message: `Invalid value provided, expected one of: ${this.values.map(util.parsePrimitive).join(' | ')}`,
                 expected: this.values,

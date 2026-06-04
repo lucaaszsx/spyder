@@ -32,7 +32,7 @@ export class SpyderCheckMinValue extends SpyderCheck<number, SpyderCheckMinValue
         const { value } = payload;
         if (inclusive ? value >= minimum : value > minimum) return;
 
-        payload.addTooSmallIssue(
+        payload.tooSmall(
             `Expected {{comparator}} {{minimum}}, got {{received}}`,
             value,
             minimum,
@@ -51,7 +51,7 @@ export class SpyderCheckMaxValue extends SpyderCheck<number, SpyderCheckMaxValue
         const { value } = payload;
         if (inclusive ? value <= maximum : value < maximum) return;
 
-        payload.addTooBigIssue(
+        payload.tooBig(
             `Expected {{comparator}} {{maximum}}, got {{received}}`,
             value,
             maximum,
@@ -68,7 +68,7 @@ export class SpyderCheckFinite extends SpyderCheck<number, SpyderCheckFiniteDef>
     public run(payload: SpyderSchemaPayload<number>): void {
         if (Number.isFinite(payload.value)) return;
 
-        payload.addIssue({
+        payload.issue({
             code: 'not_finite',
             message: 'Provided value is not a finite number',
             input: payload.value
@@ -84,7 +84,7 @@ export class SpyderCheckMultipleOf extends SpyderCheck<number, SpyderCheckMultip
     public run(payload: SpyderSchemaPayload<number>): void {
         if (payload.value % this._def.divisor === 0) return;
 
-        payload.addIssue({
+        payload.issue({
             code: 'not_multiple_of',
             message: `Provided number is not a multiple of ${this._def.divisor}`,
             divisor: this._def.divisor,

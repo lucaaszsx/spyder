@@ -15,12 +15,12 @@ export class SpyderSchemaPayload<Value = unknown> {
         return this.issues.length > 0;
     }
 
-    public addIssue(issue: util.DistributiveOmit<SpyderIssue, 'path'>): void {
+    public issue(issue: util.DistributiveOmit<SpyderIssue, 'path'>): void {
         this.issues.push(this._createIssue(issue));
     }
 
-    public addInvalidTypeIssue(expected: SpyderExpectedType, received: util.ParsedTypes): void {
-        this.addIssue({
+    public invalidType(expected: SpyderExpectedType, received: util.ParsedTypes): void {
+        this.issue({
             code: 'invalid_type',
             message: `Expected a value of type ${expected}, received ${received}`,
             expected,
@@ -29,13 +29,8 @@ export class SpyderSchemaPayload<Value = unknown> {
         });
     }
 
-    public addTooSmallIssue(
-        message: string,
-        received: number,
-        minimum: number,
-        inclusive: boolean
-    ): void {
-        this.addIssue({
+    public tooSmall(message: string, received: number, minimum: number, inclusive: boolean): void {
+        this.issue({
             code: 'too_small',
             message: util.replacePlaceholders(message, {
                 comparator: inclusive ? 'at least' : 'more than',
@@ -48,13 +43,8 @@ export class SpyderSchemaPayload<Value = unknown> {
         });
     }
 
-    public addTooBigIssue(
-        message: string,
-        received: number,
-        maximum: number,
-        inclusive: boolean
-    ): void {
-        this.addIssue({
+    public tooBig(message: string, received: number, maximum: number, inclusive: boolean): void {
+        this.issue({
             code: 'too_big',
             message: util.replacePlaceholders(message, {
                 comparator: inclusive ? 'at most' : 'less than',

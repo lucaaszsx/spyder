@@ -79,7 +79,7 @@ export class SpyderCheckMinLength extends SpyderCheck<string, SpyderCheckMinLeng
         const len = payload.value.length;
         if (inclusive ? len >= minimum : len > minimum) return;
 
-        payload.addTooSmallIssue(
+        payload.tooSmall(
             `Expected at least {{minimum}} characters, got {{received}}`,
             len,
             minimum,
@@ -98,7 +98,7 @@ export class SpyderCheckMaxLength extends SpyderCheck<string, SpyderCheckMaxLeng
         const len = payload.value.length;
         if (inclusive ? len <= maximum : len < maximum) return;
 
-        payload.addTooBigIssue(
+        payload.tooBig(
             `Expected at most {{maximum}} characters, got {{received}}`,
             len,
             maximum,
@@ -141,7 +141,7 @@ export class SpyderCheckLengthEquals extends SpyderCheck<string, SpyderCheckLeng
     public run(payload: SpyderSchemaPayload<string>): void {
         if (payload.value.length === this._def.expected) return;
 
-        payload.addIssue({
+        payload.issue({
             code: 'invalid_length',
             message: `Expected ${this._def.expected} characters, got ${payload.value.length}`,
             expected: this._def.expected,
@@ -163,7 +163,7 @@ export class SpyderCheckStartsWith extends SpyderCheck<string, SpyderCheckStarts
 
         if (value.startsWith(prefix)) return;
 
-        payload.addIssue({
+        payload.issue({
             code: 'invalid_format',
             message: `Expected string to start with "${this._def.prefix}"`,
             format: 'starts_with',
@@ -187,7 +187,7 @@ export class SpyderCheckEndsWith extends SpyderCheck<string, SpyderCheckEndsWith
 
         if (value.endsWith(suffix)) return;
 
-        payload.addIssue({
+        payload.issue({
             code: 'invalid_format',
             message: `Expected string to end with "${this._def.suffix}"`,
             format: 'ends_with',
@@ -211,7 +211,7 @@ export class SpyderCheckIncludes extends SpyderCheck<string, SpyderCheckIncludes
 
         if (value.includes(includes)) return;
 
-        payload.addIssue({
+        payload.issue({
             code: 'invalid_format',
             message: `Expected string to include "${this._def.includes}"`,
             format: 'includes',
@@ -233,7 +233,7 @@ export class SpyderCheckLowerCase extends SpyderCheck<
     public run(payload: SpyderSchemaPayload<string>): void {
         if (util.makeRegexTest('lowercase', payload.value)) return;
 
-        payload.addIssue({
+        payload.issue({
             code: 'invalid_format',
             message: `Expected only lower case characters, got "${payload.value}"`,
             format: 'lowercase',
@@ -253,7 +253,7 @@ export class SpyderCheckUpperCase extends SpyderCheck<
     public run(payload: SpyderSchemaPayload<string>): void {
         if (util.makeRegexTest('uppercase', payload.value)) return;
 
-        payload.addIssue({
+        payload.issue({
             code: 'invalid_format',
             message: `Expected only upper case characters, got "${payload.value}"`,
             format: 'uppercase',
@@ -270,7 +270,7 @@ export class SpyderCheckRegex extends SpyderCheck<string, SpyderCheckRegexDef> {
     public run(payload: SpyderSchemaPayload<string>): void {
         if (this._def.pattern.test(payload.value)) return;
 
-        payload.addIssue({
+        payload.issue({
             code: 'invalid_format',
             message: `String does not match provided pattern`,
             format: 'regex',
@@ -288,7 +288,7 @@ export class SpyderCheckUrl extends SpyderCheck<string, SpyderCheckStringFormatD
     public run(payload: SpyderSchemaPayload<string>): void {
         if (URL.canParse(payload.value)) return;
 
-        payload.addIssue({
+        payload.issue({
             code: 'invalid_format',
             message: `Expected a valid URL, got "${payload.value}"`,
             format: 'url',
@@ -305,7 +305,7 @@ export class SpyderCheckSlug extends SpyderCheck<string, SpyderCheckStringFormat
     public run(payload: SpyderSchemaPayload<string>): void {
         if (util.slugify(payload.value) === payload.value) return;
 
-        payload.addIssue({
+        payload.issue({
             code: 'invalid_format',
             message: `Expected a valid slug, got "${payload.value}"`,
             format: 'slug',
