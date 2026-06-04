@@ -173,6 +173,13 @@ export class SpyderBigIntSchema extends SpyderRangeableNumericSchema<bigint> {
     protected readonly _zero = 0n;
     protected readonly _expectedType = 'bigint';
 
+    public override multipleOf(divisor: bigint, abort?: boolean): this {
+        if (typeof divisor !== 'bigint')
+            throw new TypeError(`Expected divisor to be a bigint, received ${typeof divisor}`);
+
+        return super.multipleOf(divisor, abort);
+    }
+
     protected _coerce(value: unknown): unknown {
         if (!this._canCoerce(value)) return value;
 
