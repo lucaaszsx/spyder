@@ -9,7 +9,7 @@ export interface SpyderIssueBase {
 }
 
 /** Issues */
-export type SpyderExpectedType = 'string' | 'number' | 'NaN';
+export type SpyderExpectedType = 'string' | 'number' | 'NaN' | 'boolean';
 
 export interface SpyderIssueInvalidType<Input = unknown> extends SpyderIssueBase {
     readonly code: 'invalid_type';
