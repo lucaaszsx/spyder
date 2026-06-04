@@ -16,10 +16,7 @@ export abstract class SpyderBaseNumericSchema<T extends util.Numeric> extends Sp
     protected abstract _coerce(value: unknown): unknown;
     protected abstract _isValidTypeOf(value: unknown): value is T;
 
-    protected _parse(
-        def: SpyderSchemaDef,
-        payload: SpyderSchemaPayload<unknown>
-    ): void {
+    protected _parse(def: SpyderSchemaDef, payload: SpyderSchemaPayload<unknown>): void {
         if (def.coerce) payload.value = this._coerce(payload.value);
         if (!this._isValidTypeOf(payload.value))
             payload.invalidType(this._expectedType, util.getParsedType(payload.value));
@@ -68,12 +65,12 @@ export abstract class SpyderRangeableNumericSchema<
         maxInclusive?: boolean,
         abort?: boolean
     ): this {
-        if (minInclusive) this.gte(minimum, abort);
-        else this.gt(minimum, abort);
-        if (maxInclusive) this.lte(maximum, abort);
-        else this.lt(maximum, abort);
+        let result = this._clone();
 
-        return this;
+        result = minInclusive ? result.gte(minimum, abort) : result.gt(minimum, abort);
+        result = maxInclusive ? result.lte(maximum, abort) : result.lt(maximum, abort);
+
+        return result;
     }
 
     public positive(abort?: boolean): this {
@@ -92,10 +89,7 @@ export abstract class SpyderRangeableNumericSchema<
         return this.gte(this._zero, abort);
     }
 
-    protected override _parse(
-        def: SpyderSchemaDef,
-        payload: SpyderSchemaPayload<unknown>
-    ): void {
+    protected override _parse(def: SpyderSchemaDef, payload: SpyderSchemaPayload<unknown>): void {
         super._parse(def, payload);
         if (payload.hasIssues) return;
 
