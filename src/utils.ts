@@ -13,7 +13,6 @@ export type ParsedTypes =
     | 'array'
     | 'map'
     | 'set'
-    | 'nan'
     | 'null'
     | 'promise';
 export type Literal = string | number | boolean | bigint | null | undefined;
@@ -21,6 +20,8 @@ export type LiteralArray = Literal[];
 export type Primitive = string | number | symbol | bigint | boolean | null | undefined;
 export type PrimitiveArray = Primitive[];
 export type Stringable = string | number | boolean | { toString(): string };
+export type Numeric = number | bigint;
+export type NumericSchemaKind = 'number' | 'int' | 'bigint' | 'NaN';
 
 /** Utility types */
 export type DistributiveOmit<T, K extends PropertyKey> = T extends unknown ? Omit<T, K> : never;

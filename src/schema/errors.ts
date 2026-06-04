@@ -26,14 +26,14 @@ export interface SpyderIssueInvalidValue<Input = unknown> extends SpyderIssueBas
 
 export interface SpyderIssueTooSmall<Input = unknown> extends SpyderIssueBase {
     readonly code: 'too_small';
-    readonly minimum: number;
+    readonly minimum: util.Numeric;
     readonly inclusive: boolean;
     readonly input: Input;
 }
 
 export interface SpyderIssueTooBig<Input = unknown> extends SpyderIssueBase {
     readonly code: 'too_big';
-    readonly maximum: number;
+    readonly maximum: util.Numeric;
     readonly inclusive: boolean;
     readonly input: Input;
 }
@@ -51,8 +51,8 @@ export interface SpyderIssueNotFinite extends SpyderIssueBase {
 
 export interface SpyderIssueNotMultipleOf extends SpyderIssueBase {
     readonly code: 'not_multiple_of';
-    readonly divisor: number;
-    readonly input: number;
+    readonly divisor: util.Numeric;
+    readonly input: util.Numeric;
 }
 
 export interface SpyderIssueInvalidStringFormat extends SpyderIssueBase {

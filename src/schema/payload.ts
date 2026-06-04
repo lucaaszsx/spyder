@@ -29,7 +29,12 @@ export class SpyderSchemaPayload<Value = unknown> {
         });
     }
 
-    public tooSmall(message: string, received: number, minimum: number, inclusive: boolean): void {
+    public tooSmall(
+        message: string,
+        received: util.Numeric,
+        minimum: util.Numeric,
+        inclusive: boolean
+    ): void {
         this.issue({
             code: 'too_small',
             message: util.replacePlaceholders(message, {
@@ -43,7 +48,12 @@ export class SpyderSchemaPayload<Value = unknown> {
         });
     }
 
-    public tooBig(message: string, received: number, maximum: number, inclusive: boolean): void {
+    public tooBig(
+        message: string,
+        received: util.Numeric,
+        maximum: util.Numeric,
+        inclusive: boolean
+    ): void {
         this.issue({
             code: 'too_big',
             message: util.replacePlaceholders(message, {
