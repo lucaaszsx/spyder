@@ -19,7 +19,7 @@ export interface SpyderIssueInvalidType<Input = unknown> extends SpyderIssueBase
 }
 
 export interface SpyderIssueInvalidValue<Input = unknown> extends SpyderIssueBase {
-    readonly code: 'invalud_value';
+    readonly code: 'invalid_value';
     readonly expected: util.PrimitiveArray;
     readonly input: Input;
 }
