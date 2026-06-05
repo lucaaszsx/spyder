@@ -13,7 +13,7 @@ import type { SpyderSchemaPayload } from '../payload';
 import type { SpyderExpectedType } from '../errors';
 import * as util from '../../utils';
 
-export abstract class SpyderBaseNumericSchema<
+export abstract class SpyderNumericSchemaBase<
     T extends util.Numeric
 > extends SpyderCoerceableSchemaBase<T> {
     public abstract readonly kind: util.NumericSchemaKind;
@@ -31,7 +31,7 @@ export abstract class SpyderBaseNumericSchema<
 
 export abstract class SpyderRangeableNumericSchema<
     T extends util.Numeric
-> extends SpyderBaseNumericSchema<T> {
+> extends SpyderNumericSchemaBase<T> {
     protected abstract readonly _minValue: T | null;
     protected abstract readonly _maxValue: T | null;
     protected abstract readonly _zero: T;
@@ -211,7 +211,7 @@ export class SpyderBigIntSchema extends SpyderRangeableNumericSchema<bigint> {
     }
 }
 
-export class SpyderNaNSchema extends SpyderBaseNumericSchema<number> {
+export class SpyderNaNSchema extends SpyderNumericSchemaBase<number> {
     public readonly kind = 'NaN';
     protected readonly _expectedType = 'NaN';
 
