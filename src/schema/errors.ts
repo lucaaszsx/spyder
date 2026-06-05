@@ -3,13 +3,20 @@ import type * as util from '../utils';
 
 export interface SpyderIssueBase {
     readonly code: string;
-    readonly path: readonly PropertyKey[] | null;
+    readonly path: readonly PropertyKey[];
     readonly message: string;
     readonly input: unknown;
 }
 
 /** Issues */
-export type SpyderExpectedType = 'string' | 'number' | 'int' | 'bigint' | 'NaN' | 'boolean';
+export type SpyderExpectedType =
+    | 'string'
+    | 'number'
+    | 'int'
+    | 'bigint'
+    | 'NaN'
+    | 'boolean'
+    | 'array';
 
 export interface SpyderIssueInvalidType<Input = unknown> extends SpyderIssueBase {
     readonly code: 'invalid_type';

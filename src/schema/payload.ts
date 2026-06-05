@@ -4,6 +4,7 @@ import * as util from '../utils';
 export class SpyderSchemaPayload<Value = unknown> {
     public issues: SpyderIssue[] | null = null;
     public value: Value;
+    public path: readonly PropertyKey[] = [];
 
     constructor(value: Value) {
         this.value = value;
@@ -16,7 +17,7 @@ export class SpyderSchemaPayload<Value = unknown> {
     public issue(issue: util.DistributiveOmit<SpyderIssue, 'path'>): void {
         if (!this.issues) this.issues = [];
 
-        this.issues.push({ ...issue, path: null });
+        this.issues.push({ ...issue, path: this.path });
     }
 
     public invalidType(expected: SpyderExpectedType, received: util.ParsedTypes): void {
