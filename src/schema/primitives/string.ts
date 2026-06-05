@@ -12,11 +12,11 @@ import {
     SpyderCheckSlug,
     SpyderCheckUrl
 } from '../checks/string';
-import { type SpyderPrimitiveSchemaDef, SpyderPrimitiveSchemaBase } from './base';
+import { type SpyderCoerceableSchemaDef, SpyderCoerceableSchemaBase } from '../schema';
 import type { SpyderSchemaPayload } from '../payload';
 import * as util from '../../utils';
 
-export class SpyderStringSchema extends SpyderPrimitiveSchemaBase<string> {
+export class SpyderStringSchema extends SpyderCoerceableSchemaBase<string> {
     public trim(): this {
         return this._addTransform((v) => v.trim());
     }
@@ -167,7 +167,7 @@ export class SpyderStringSchema extends SpyderPrimitiveSchemaBase<string> {
         return this._addCheck(new SpyderCheckSlug(abort));
     }
 
-    protected _parse(def: SpyderPrimitiveSchemaDef, payload: SpyderSchemaPayload<string>): void {
+    protected _parse(def: SpyderCoerceableSchemaDef, payload: SpyderSchemaPayload<string>): void {
         if (def.coerce) payload.value = String(payload.value);
         if (typeof payload.value !== 'string')
             payload.invalidType('string', util.getParsedType(payload.value));

@@ -21,6 +21,10 @@ export interface SpyderSchemaDef {
     innerSchema: SpyderSchemaBase<unknown> | null;
 }
 
+export interface SpyderCoerceableSchemaDef extends SpyderSchemaDef {
+    coerce: boolean;
+}
+
 export abstract class SpyderSchemaBase<O> {
     declare readonly _output: O;
     _def: SpyderSchemaDef;
@@ -99,6 +103,16 @@ export abstract class SpyderSchemaBase<O> {
         clone._def = { ...this._def, steps: [...this._def.steps] };
 
         return clone;
+    }
+}
+
+export abstract class SpyderCoerceableSchemaBase<O> extends SpyderSchemaBase<O> {
+    declare _def: SpyderCoerceableSchemaDef;
+
+    constructor(coerce = false, innerSchema?: SpyderSchemaBase<unknown> | null) {
+        super(innerSchema);
+
+        this._def.coerce = coerce === true;
     }
 }
 

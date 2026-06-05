@@ -4,22 +4,25 @@ import {
     SpyderCheckMinValue,
     SpyderCheckMultipleOf
 } from '../checks/number';
-import { type SpyderPrimitiveSchemaDef, SpyderPrimitiveSchemaBase } from './base';
+import {
+    type SpyderCoerceableSchemaDef,
+    type SpyderSchemaBase,
+    SpyderCoerceableSchemaBase
+} from '../schema';
 import type { SpyderSchemaPayload } from '../payload';
 import type { SpyderExpectedType } from '../errors';
-import type { SpyderSchemaBase } from '../schema';
 import * as util from '../../utils';
 
 export abstract class SpyderBaseNumericSchema<
     T extends util.Numeric
-> extends SpyderPrimitiveSchemaBase<T> {
+> extends SpyderCoerceableSchemaBase<T> {
     public abstract readonly kind: util.NumericSchemaKind;
     protected abstract readonly _expectedType: SpyderExpectedType;
 
     protected abstract _coerce(value: unknown): unknown;
     protected abstract _isValidTypeOf(value: unknown): value is T;
 
-    protected _parse(def: SpyderPrimitiveSchemaDef, payload: SpyderSchemaPayload<unknown>): void {
+    protected _parse(def: SpyderCoerceableSchemaDef, payload: SpyderSchemaPayload<unknown>): void {
         if (def.coerce) payload.value = this._coerce(payload.value);
         if (!this._isValidTypeOf(payload.value))
             payload.invalidType(this._expectedType, util.getParsedType(payload.value));
@@ -93,7 +96,7 @@ export abstract class SpyderRangeableNumericSchema<
     }
 
     protected override _parse(
-        def: SpyderPrimitiveSchemaDef,
+        def: SpyderCoerceableSchemaDef,
         payload: SpyderSchemaPayload<unknown>
     ): void {
         super._parse(def, payload);
