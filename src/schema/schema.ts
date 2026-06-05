@@ -19,19 +19,17 @@ export interface SpyderSchemaDef {
     hasCatch: boolean;
     catchValue?: unknown;
     innerSchema: SpyderSchema<unknown> | null;
-    coerce: boolean;
 }
 
 export abstract class SpyderSchema<O> {
     declare readonly _output: O;
     _def: SpyderSchemaDef;
 
-    constructor(coerce = false, innerSchema: SpyderSchema<unknown> | null = null) {
+    constructor(innerSchema: SpyderSchema<unknown> | null = null) {
         this._def = {
             steps: [],
             hasCatch: false,
-            innerSchema,
-            coerce
+            innerSchema
         };
     }
 

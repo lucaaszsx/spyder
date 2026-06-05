@@ -1,8 +1,8 @@
-import { SpyderSchema, type SpyderSchemaDef } from '../schema';
+import { type SpyderPrimitiveSchemaDef, SpyderPrimitiveSchemaBase } from './base';
 import type { SpyderSchemaPayload } from '../payload';
 import * as util from '../../utils';
 
-export class SpyderLiteralSchema extends SpyderSchema<util.Literal> {
+export class SpyderLiteralSchema extends SpyderPrimitiveSchemaBase<util.Literal> {
     public values: util.LiteralArray = [];
 
     constructor(...values: util.LiteralArray) {
@@ -15,7 +15,7 @@ export class SpyderLiteralSchema extends SpyderSchema<util.Literal> {
     }
 
     protected _parse(
-        _def: SpyderSchemaDef,
+        _def: SpyderPrimitiveSchemaDef,
         payload: SpyderSchemaPayload<util.Literal>
     ): void {
         if (!this.values.includes(payload.value))
