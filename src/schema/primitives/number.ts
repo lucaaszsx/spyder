@@ -7,8 +7,8 @@ import {
 import { type SpyderPrimitiveSchemaDef, SpyderPrimitiveSchemaBase } from './base';
 import type { SpyderSchemaPayload } from '../payload';
 import type { SpyderExpectedType } from '../errors';
+import type { SpyderSchemaBase } from '../schema';
 import * as util from '../../utils';
-import type { SpyderSchema } from '../schema';
 
 export abstract class SpyderBaseNumericSchema<
     T extends util.Numeric
@@ -127,7 +127,7 @@ export class SpyderNumberSchema extends SpyderRangeableNumericSchema<number> {
     constructor(
         setFiniteCheck = true,
         coerce?: boolean,
-        innerSchema?: SpyderSchema<unknown> | null
+        innerSchema?: SpyderSchemaBase<unknown> | null
     ) {
         super(coerce, innerSchema);
         if (setFiniteCheck) this.finite(true);

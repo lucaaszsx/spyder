@@ -18,14 +18,14 @@ export interface SpyderSchemaDef {
     steps: SpyderSchemaStep[];
     hasCatch: boolean;
     catchValue?: unknown;
-    innerSchema: SpyderSchema<unknown> | null;
+    innerSchema: SpyderSchemaBase<unknown> | null;
 }
 
-export abstract class SpyderSchema<O> {
+export abstract class SpyderSchemaBase<O> {
     declare readonly _output: O;
     _def: SpyderSchemaDef;
 
-    constructor(innerSchema: SpyderSchema<unknown> | null = null) {
+    constructor(innerSchema: SpyderSchemaBase<unknown> | null = null) {
         this._def = {
             steps: [],
             hasCatch: false,
@@ -102,4 +102,4 @@ export abstract class SpyderSchema<O> {
     }
 }
 
-export type Infer<T extends SpyderSchema<unknown>> = T['_output'];
+export type Infer<T extends SpyderSchemaBase<unknown>> = T['_output'];
