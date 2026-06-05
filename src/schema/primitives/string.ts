@@ -37,6 +37,56 @@ export class SpyderStringSchema extends SpyderPrimitiveSchemaBase<string> {
         return this._addTransform((v) => v.substring(start, end));
     }
 
+    public after(
+        str: string,
+        options?: {
+            trimOnlyWhenFound?: boolean;
+            trimStart?: boolean;
+            trimEnd?: boolean;
+            trim?: boolean;
+        }
+    ): this {
+        if (!util.isPlainObject(options)) options = {};
+
+        options = util.mergeObjects(
+            {
+                trimOnlyWhenFound: true,
+                trimStart: false,
+                trimEnd: false,
+                trim: false
+            },
+            options
+        );
+
+        return this._addTransform((v) => {
+            const idx = v.indexOf(str);
+            let found = idx > -1 ? v.slice(idx + str.length) : v;
+
+            if (options.trimOnlyWhenFound && idx <= -1) return found;
+            if (options.trim) found = found.trim();
+            if (options.trimStart) found = found.trimStart();
+            if (options.trimEnd) found = found.trimEnd();
+
+            return found;
+        });
+    }
+
+    public padStart(maxLength: number, fillString?: string): this {
+        return this._addTransform((v) => v.padStart(maxLength, fillString));
+    }
+
+    public padEnd(maxLength: number, fillString?: string): this {
+        return this._addTransform((v) => v.padEnd(maxLength, fillString));
+    }
+
+    public prefix(str: string): this {
+        return this._addTransform((v) => str + v);
+    }
+
+    public suffix(str: string): this {
+        return this._addTransform((v) => v + str);
+    }
+
     public toLowerCase(): this {
         return this._addTransform((v) => v.toLowerCase());
     }
