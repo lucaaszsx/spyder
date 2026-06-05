@@ -38,8 +38,12 @@ export abstract class SpyderSchemaBase<O> {
     }
 
     public parse(rawValue: unknown): O {
-        const value = this._def.innerSchema ? this._def.innerSchema.parse(rawValue) : rawValue;
-        const payload = new SpyderSchemaPayload<unknown>(value);
+        const payload = new SpyderSchemaPayload<unknown>(rawValue);
+        return this.parseWithPayload(payload);
+    }
+
+    public parseWithPayload(payload: SpyderSchemaPayload<unknown>): O {
+        if (this._def.innerSchema) this._def.innerSchema.parseWithPayload(payload);
         this._parse(this._def, payload);
 
         if (!payload.hasIssues) {
