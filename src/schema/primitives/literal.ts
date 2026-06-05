@@ -6,11 +6,11 @@ export class SpyderLiteralSchema extends SpyderPrimitiveSchemaBase<util.Literal>
     public values: Set<util.Literal>;
 
     constructor(...values: util.LiteralArray) {
-        if (values.length === 0)
+        if (!Array.isArray(values) || values.length === 0)
             throw new Error('Cannot create a literal schema without specifying any literal values');
 
         super(false, null);
-        this.values = new Set([values].flat());
+        this.values = new Set(values);
     }
 
     protected _parse(
