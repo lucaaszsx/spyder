@@ -118,9 +118,9 @@ export type SpyderIssueCode = SpyderIssue['code'];
 
 /** Errors */
 export class SpyderSchemaParsingError extends Error {
-    public issues: SpyderIssue[];
+    public issues: readonly SpyderIssue[];
 
-    constructor(issues: SpyderIssue[]) {
+    constructor(issues: readonly SpyderIssue[]) {
         super('One or more errors occurred during the parsing attempt');
 
         this.issues = issues;

@@ -2,23 +2,29 @@ import type { SpyderExpectedType, SpyderIssue } from './errors';
 import * as util from '../utils';
 
 export class SpyderSchemaContext {
-    public issues: SpyderIssue[] = [];
-    public path: readonly PropertyKey[];
+    private readonly _issues: SpyderIssue[] = [];
+    private readonly _parent: SpyderSchemaContext | null;
+    private readonly _key: PropertyKey | null;
 
-    constructor(path: readonly PropertyKey[] = []) {
-        this.path = path;
+    constructor(parent: SpyderSchemaContext | null = null, key: PropertyKey | null = null) {
+        this._parent = parent;
+        this._key = key;
     }
 
     public get hasIssues(): boolean {
-        return !!this.issues && this.issues.length > 0;
+        return !!this._issues && this._issues.length > 0;
     }
 
-    public issue(issue: util.DistributiveOmit<SpyderIssue, 'path'>): void {
-        this.issues.push({ ...issue, path: this.path });
+    public get fullPath(): readonly PropertyKey[] {
+        return [...(this._parent?.fullPath || []), ...(this._key != null ? [this._key] : [])];
     }
 
-    public issueWithPath(issue: SpyderIssue): void {
-        this.issues.push(issue);
+    public get issues(): readonly SpyderIssue[] {
+        return this._issues;
+    }
+
+    public addIssue(issue: util.DistributiveOmit<SpyderIssue, 'path'>): void {
+        this._issues.push({ ...issue, path: this.fullPath });
     }
 
     public addInvalidType(
@@ -26,7 +32,7 @@ export class SpyderSchemaContext {
         received: util.ParsedTypes,
         input: unknown
     ): void {
-        this.issue({
+        this.addIssue({
             code: 'invalid_type',
             message: `Expected a value of type ${expected}, received ${received}`,
             expected,
@@ -41,14 +47,13 @@ export class SpyderSchemaContext {
         minimum: util.Numeric,
         inclusive: boolean
     ): void {
-        this.issues.push({
+        this.addIssue({
             code: 'too_small',
             message: message({
                 comparator: inclusive ? 'at least' : 'more than',
                 minimum: util.parsePrimitive(minimum),
                 input: util.parsePrimitive(input)
             }),
-            path: this.path,
             minimum,
             inclusive,
             input
@@ -61,14 +66,13 @@ export class SpyderSchemaContext {
         maximum: util.Numeric,
         inclusive: boolean
     ): void {
-        this.issues.push({
+        this.addIssue({
             code: 'too_big',
             message: message({
                 comparator: inclusive ? 'at most' : 'less than',
                 maximum: util.parsePrimitive(maximum),
                 input: util.parsePrimitive(input)
             }),
-            path: this.path,
             maximum,
             inclusive,
             input
