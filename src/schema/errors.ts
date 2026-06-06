@@ -70,30 +70,33 @@ export interface SpyderIssueInvalidStringFormat extends SpyderIssueBase {
 }
 
 export interface SpyderIssueStringCommonFormats extends SpyderIssueInvalidStringFormat {
-    format: Exclude<SpyderStringFormats, 'regex' | 'starts_with' | 'ends_with' | 'includes'>;
+    readonly format: Exclude<
+        SpyderStringFormats,
+        'regex' | 'starts_with' | 'ends_with' | 'includes'
+    >;
 }
 
 export interface SpyderIssueStringStartsWith extends SpyderIssueInvalidStringFormat {
-    format: 'starts_with';
-    prefix: string;
-    caseInsensitive: boolean;
+    readonly format: 'starts_with';
+    readonly prefix: string;
+    readonly caseInsensitive: boolean;
 }
 
 export interface SpyderIssueStringEndsWith extends SpyderIssueInvalidStringFormat {
-    format: 'ends_with';
-    suffix: string;
-    caseInsensitive: boolean;
+    readonly format: 'ends_with';
+    readonly suffix: string;
+    readonly caseInsensitive: boolean;
 }
 
 export interface SpyderIssueStringIncludes extends SpyderIssueInvalidStringFormat {
-    format: 'includes';
-    includes: string;
-    caseInsensitive: boolean;
+    readonly format: 'includes';
+    readonly includes: string;
+    readonly caseInsensitive: boolean;
 }
 
 export interface SpyderIssueStringInvalidRegex extends SpyderIssueInvalidStringFormat {
-    format: 'regex';
-    pattern: string;
+    readonly format: 'regex';
+    readonly pattern: string;
 }
 
 /** Utility types */
