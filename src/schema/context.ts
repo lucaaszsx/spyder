@@ -76,6 +76,10 @@ export class SpyderSchemaContext {
     }
 
     public child(key: PropertyKey): SpyderSchemaContext {
-        return new SpyderSchemaContext([...this.path, key]);
+        return new SpyderSchemaContext(this, key);
+    }
+
+    public merge(child: SpyderSchemaContext): void {
+        this._issues.push(...child.issues);
     }
 }
