@@ -1,5 +1,5 @@
-import { type SpyderCoerceableSchemaDef, SpyderCoerceableSchemaBase } from '../schema';
-import type { SpyderSchemaPayload } from '../payload';
+import { SpyderCoerceableSchemaBase } from '../schema';
+import type { SpyderSchemaContext } from '../context';
 import * as util from '../../utils';
 
 export class SpyderLiteralSchema extends SpyderCoerceableSchemaBase<util.Literal> {
@@ -13,16 +13,15 @@ export class SpyderLiteralSchema extends SpyderCoerceableSchemaBase<util.Literal
         this.values = new Set(values);
     }
 
-    protected _parse(
-        _def: SpyderCoerceableSchemaDef,
-        payload: SpyderSchemaPayload<util.Literal>
-    ): void {
-        if (!this.values.has(payload.value))
-            payload.issue({
+    protected _parse(ctx: SpyderSchemaContext, value: util.Literal): util.Literal {
+        if (!this.values.has(value))
+            ctx.issue({
                 code: 'invalid_value',
                 message: `Invalid value provided, expected one of: ${[...this.values].map(util.parsePrimitive).join(' | ')}`,
                 expected: [...this.values],
-                input: payload.value
+                input: value
             });
+
+        return value;
     }
 }

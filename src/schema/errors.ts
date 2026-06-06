@@ -18,37 +18,37 @@ export type SpyderExpectedType =
     | 'boolean'
     | 'array';
 
-export interface SpyderIssueInvalidType<Input = unknown> extends SpyderIssueBase {
+export interface SpyderIssueInvalidType extends SpyderIssueBase {
     readonly code: 'invalid_type';
     readonly expected: SpyderExpectedType;
     readonly received: util.ParsedTypes;
-    readonly input: Input;
+    readonly input: unknown;
 }
 
-export interface SpyderIssueInvalidValue<Input = unknown> extends SpyderIssueBase {
+export interface SpyderIssueInvalidValue extends SpyderIssueBase {
     readonly code: 'invalid_value';
     readonly expected: util.PrimitiveArray;
-    readonly input: Input;
+    readonly input: unknown;
 }
 
-export interface SpyderIssueTooSmall<Input = unknown> extends SpyderIssueBase {
+export interface SpyderIssueTooSmall extends SpyderIssueBase {
     readonly code: 'too_small';
     readonly minimum: util.Numeric;
     readonly inclusive: boolean;
-    readonly input: Input;
+    readonly input: unknown;
 }
 
-export interface SpyderIssueTooBig<Input = unknown> extends SpyderIssueBase {
+export interface SpyderIssueTooBig extends SpyderIssueBase {
     readonly code: 'too_big';
     readonly maximum: util.Numeric;
     readonly inclusive: boolean;
-    readonly input: Input;
+    readonly input: unknown;
 }
 
-export interface SpyderIssueInvalidLength<Input = unknown> extends SpyderIssueBase {
+export interface SpyderIssueInvalidLength extends SpyderIssueBase {
     readonly code: 'invalid_length';
     readonly expected: number;
-    readonly input: Input;
+    readonly input: unknown;
 }
 
 export interface SpyderIssueNotFinite extends SpyderIssueBase {
@@ -115,3 +115,14 @@ export type SpyderIssue =
     | SpyderIssueTooBig;
 
 export type SpyderIssueCode = SpyderIssue['code'];
+
+/** Errors */
+export class SpyderSchemaParsingError extends Error {
+    public issues: SpyderIssue[];
+
+    constructor(issues: SpyderIssue[]) {
+        super('One or more errors occurred during the parsing attempt');
+
+        this.issues = issues;
+    }
+}

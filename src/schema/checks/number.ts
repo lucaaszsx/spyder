@@ -1,6 +1,6 @@
 import { type SpyderCheckDef, SpyderCheck } from './base';
-import type { SpyderSchemaPayload } from '../payload';
-import type * as util from '../../utils';
+import type { SpyderSchemaContext } from '../context';
+import * as util from '../../utils';
 
 export interface SpyderCheckMinValueDef<T extends util.Numeric> extends SpyderCheckDef {
     kind: 'number_min_value';
@@ -32,13 +32,12 @@ export class SpyderCheckMinValue<T extends util.Numeric> extends SpyderCheck<
         super({ kind: 'number_min_value', minimum, inclusive, abort });
     }
 
-    public run(payload: SpyderSchemaPayload<T>): void {
+    public run(ctx: SpyderSchemaContext, value: T): void {
         const { minimum, inclusive } = this._def;
-        const { value } = payload;
         if (inclusive ? value >= minimum : value > minimum) return;
 
-        payload.tooSmall(
-            `Expected {{comparator}} {{minimum}}, got {{received}}`,
+        ctx.addTooSmall(
+            ({ comparator, minimum, input }) => `Expected ${comparator} ${minimum}, got ${input}`,
             value,
             minimum,
             inclusive
@@ -54,13 +53,12 @@ export class SpyderCheckMaxValue<T extends util.Numeric> extends SpyderCheck<
         super({ kind: 'number_max_value', maximum, inclusive, abort });
     }
 
-    public run(payload: SpyderSchemaPayload<T>): void {
+    public run(ctx: SpyderSchemaContext, value: T): void {
         const { maximum, inclusive } = this._def;
-        const { value } = payload;
         if (inclusive ? value <= maximum : value < maximum) return;
 
-        payload.tooBig(
-            `Expected {{comparator}} {{maximum}}, got {{received}}`,
+        ctx.addTooBig(
+            ({ comparator, maximum, input }) => `Expected ${comparator} ${maximum}, got ${input}`,
             value,
             maximum,
             inclusive
@@ -76,14 +74,14 @@ export class SpyderCheckMultipleOf<T extends util.Numeric> extends SpyderCheck<
         super({ kind: 'number_multiple_of', divisor, zero, abort });
     }
 
-    public run(payload: SpyderSchemaPayload<T>): void {
-        if (payload.value % this._def.divisor === this._def.zero) return;
+    public run(ctx: SpyderSchemaContext, value: T): void {
+        if (value % this._def.divisor === this._def.zero) return;
 
-        payload.issue({
+        ctx.issue({
             code: 'not_multiple_of',
-            message: `Provided number is not a multiple of ${this._def.divisor}`,
+            message: `Provided number is not a multiple of ${util.parsePrimitive(this._def.divisor)}`,
             divisor: this._def.divisor,
-            input: payload.value
+            input: value
         });
     }
 }
@@ -93,13 +91,13 @@ export class SpyderCheckFinite extends SpyderCheck<number, SpyderCheckFiniteDef>
         super({ kind: 'number_finite', abort });
     }
 
-    public run(payload: SpyderSchemaPayload<number>): void {
-        if (Number.isFinite(payload.value)) return;
+    public run(ctx: SpyderSchemaContext, value: number): void {
+        if (Number.isFinite(value)) return;
 
-        payload.issue({
+        ctx.issue({
             code: 'not_finite',
             message: 'Provided value is not a finite number',
-            input: payload.value
+            input: value
         });
     }
 }

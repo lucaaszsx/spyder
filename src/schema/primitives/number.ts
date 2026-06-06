@@ -4,12 +4,8 @@ import {
     SpyderCheckMinValue,
     SpyderCheckMultipleOf
 } from '../checks/number';
-import {
-    type SpyderCoerceableSchemaDef,
-    type SpyderSchemaBase,
-    SpyderCoerceableSchemaBase
-} from '../schema';
-import type { SpyderSchemaPayload } from '../payload';
+import { type SpyderSchemaBase, SpyderCoerceableSchemaBase } from '../schema';
+import type { SpyderSchemaContext } from '../context';
 import type { SpyderExpectedType } from '../errors';
 import * as util from '../../utils';
 
@@ -22,10 +18,12 @@ export abstract class SpyderNumericSchemaBase<
     protected abstract _coerce(value: unknown): unknown;
     protected abstract _isValidTypeOf(value: unknown): value is T;
 
-    protected _parse(def: SpyderCoerceableSchemaDef, payload: SpyderSchemaPayload<unknown>): void {
-        if (def.coerce) payload.value = this._coerce(payload.value);
-        if (!this._isValidTypeOf(payload.value))
-            payload.invalidType(this._expectedType, util.getParsedType(payload.value));
+    protected _parse(ctx: SpyderSchemaContext, value: unknown): unknown {
+        if (this._def.coerce) value = this._coerce(value);
+        if (!this._isValidTypeOf(value))
+            ctx.addInvalidType(this._expectedType, util.getParsedType(value), value);
+
+        return value;
     }
 }
 
@@ -95,28 +93,27 @@ export abstract class SpyderRangeableNumericSchema<
         return this.gte(this._zero, abort);
     }
 
-    protected override _parse(
-        def: SpyderCoerceableSchemaDef,
-        payload: SpyderSchemaPayload<unknown>
-    ): void {
-        super._parse(def, payload);
-        if (payload.hasIssues) return;
+    protected override _parse(ctx: SpyderSchemaContext, value: T): unknown {
+        const newValue = super._parse(ctx, value);
+        if (ctx.hasIssues) return;
 
-        const value = payload.value as T;
-        if (this._minValue && value < this._minValue)
-            payload.tooSmall(
-                'The value provided is less than the minimum value of {{minimum}}',
-                value,
+        if (this._minValue !== null && (newValue as T) < this._minValue)
+            ctx.addTooSmall(
+                ({ minimum }) => `The value provided is less than the minimum value of ${minimum}`,
+                newValue,
                 this._minValue,
                 true
             );
-        if (this._maxValue && value > this._maxValue)
-            payload.tooBig(
-                'The value provided is greater than the maximum value of {{maximum}}',
-                value,
+        if (this._maxValue !== null && (newValue as T) > this._maxValue)
+            ctx.addTooBig(
+                ({ maximum }) =>
+                    `The value provided is greater than the maximum value of ${maximum}`,
+                newValue,
                 this._maxValue,
                 true
             );
+
+        return newValue;
     }
 }
 
@@ -133,7 +130,7 @@ export class SpyderNumberSchema extends SpyderRangeableNumericSchema<number> {
         innerSchema?: SpyderSchemaBase<unknown> | null
     ) {
         super(coerce, innerSchema);
-        if (setFiniteCheck) this.finite(true);
+        if (setFiniteCheck) this.finite(true); // todo: fix this
     }
 
     public finite(abort?: boolean): this {
@@ -174,7 +171,9 @@ export class SpyderBigIntSchema extends SpyderRangeableNumericSchema<bigint> {
 
     public override multipleOf(divisor: bigint, abort?: boolean): this {
         if (typeof divisor !== 'bigint')
-            throw new TypeError(`Expected divisor to be a bigint, received ${typeof divisor}`);
+            throw new TypeError(
+                `Expected divisor to be a bigint, received a ${typeof divisor}: ${String(divisor)}`
+            );
 
         return super.multipleOf(divisor, abort);
     }

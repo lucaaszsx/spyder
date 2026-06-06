@@ -1,4 +1,4 @@
-import type { SpyderSchemaPayload } from '../payload';
+import type { SpyderSchemaContext } from '../context';
 
 export interface SpyderCheckDef {
     kind: string;
@@ -20,5 +20,5 @@ export abstract class SpyderCheck<T, D extends SpyderCheckDef = SpyderCheckDef> 
         return !!this._def.abort;
     }
 
-    abstract run(payload: SpyderSchemaPayload<T>): void;
+    abstract run(ctx: SpyderSchemaContext, value: T): void;
 }

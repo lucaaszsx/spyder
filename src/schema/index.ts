@@ -1,6 +1,6 @@
 export * from './schema';
 export * from './errors';
-export * from './payload';
+export * from './context';
 
 export * from './primitives/string';
 export * from './primitives/number';

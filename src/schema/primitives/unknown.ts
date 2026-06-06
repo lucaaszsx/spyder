@@ -1,9 +1,9 @@
-import { type SpyderSchemaDef, SpyderSchemaBase } from '../schema';
-import type { SpyderSchemaPayload } from '../payload';
+import type { SpyderSchemaContext } from '../context';
+import { SpyderSchemaBase } from '../schema';
 
 export class SpyderUnknownSchema extends SpyderSchemaBase<unknown> {
-    protected _parse(_def: SpyderSchemaDef, _payload: SpyderSchemaPayload): void {
+    protected _parse(_payload: SpyderSchemaContext, value: unknown): unknown {
         // Don't do anything, "unknown" schema allows any value
-        return;
+        return value;
     }
 }

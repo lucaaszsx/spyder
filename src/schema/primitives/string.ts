@@ -12,8 +12,8 @@ import {
     SpyderCheckSlug,
     SpyderCheckUrl
 } from '../checks/string';
-import { type SpyderCoerceableSchemaDef, SpyderCoerceableSchemaBase } from '../schema';
-import type { SpyderSchemaPayload } from '../payload';
+import { SpyderCoerceableSchemaBase } from '../schema';
+import type { SpyderSchemaContext } from '../context';
 import * as util from '../../utils';
 
 export class SpyderStringSchema extends SpyderCoerceableSchemaBase<string> {
@@ -167,9 +167,11 @@ export class SpyderStringSchema extends SpyderCoerceableSchemaBase<string> {
         return this._addCheck(new SpyderCheckSlug(abort));
     }
 
-    protected _parse(def: SpyderCoerceableSchemaDef, payload: SpyderSchemaPayload<string>): void {
-        if (def.coerce) payload.value = String(payload.value);
-        if (typeof payload.value !== 'string')
-            payload.invalidType('string', util.getParsedType(payload.value));
+    protected _parse(ctx: SpyderSchemaContext, value: string): string {
+        if (this._def.coerce) value = String(value);
+        if (typeof value !== 'string')
+            ctx.addInvalidType('string', util.getParsedType(value), value);
+
+        return value;
     }
 }

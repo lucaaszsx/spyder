@@ -1,5 +1,5 @@
 import { type SpyderCheckDef, SpyderCheck } from './base';
-import type { SpyderSchemaPayload } from '../payload';
+import type { SpyderSchemaContext } from '../context';
 import * as util from '../../utils';
 
 export interface SpyderCheckMinLengthDef extends SpyderCheckDef {
@@ -74,13 +74,14 @@ export class SpyderCheckMinLength extends SpyderCheck<string, SpyderCheckMinLeng
         super({ kind: 'string_min_length', minimum, inclusive, abort });
     }
 
-    public run(payload: SpyderSchemaPayload<string>): void {
+    public run(ctx: SpyderSchemaContext, value: string): void {
         const { minimum, inclusive } = this._def;
-        const len = payload.value.length;
+        const len = value.length;
         if (inclusive ? len >= minimum : len > minimum) return;
 
-        payload.tooSmall(
-            `Expected at least {{minimum}} characters, got {{received}}`,
+        ctx.addTooSmall(
+            ({ comparator, minimum, input }) =>
+                `Expected ${comparator} ${minimum} characters, got ${input}`,
             len,
             minimum,
             inclusive
@@ -93,13 +94,14 @@ export class SpyderCheckMaxLength extends SpyderCheck<string, SpyderCheckMaxLeng
         super({ kind: 'string_max_length', maximum, inclusive, abort });
     }
 
-    public run(payload: SpyderSchemaPayload<string>): void {
+    public run(ctx: SpyderSchemaContext, value: string): void {
         const { maximum, inclusive } = this._def;
-        const len = payload.value.length;
+        const len = value.length;
         if (inclusive ? len <= maximum : len < maximum) return;
 
-        payload.tooBig(
-            `Expected at most {{maximum}} characters, got {{received}}`,
+        ctx.addTooBig(
+            ({ comparator, maximum, input }) =>
+                `Expected ${comparator} ${maximum} characters, got ${input}`,
             len,
             maximum,
             inclusive
@@ -125,11 +127,11 @@ export class SpyderCheckBetweenLength extends SpyderCheck<string, SpyderCheckBet
         });
     }
 
-    public run(payload: SpyderSchemaPayload<string>): void {
+    public run(ctx: SpyderSchemaContext, value: string): void {
         const { minInclusive, maxInclusive, minimum, maximum, abort } = this._def;
 
-        new SpyderCheckMinLength(minimum, minInclusive, abort).run(payload);
-        new SpyderCheckMaxLength(maximum, maxInclusive, abort).run(payload);
+        new SpyderCheckMinLength(minimum, minInclusive, abort).run(ctx, value);
+        new SpyderCheckMaxLength(maximum, maxInclusive, abort).run(ctx, value);
     }
 }
 
@@ -138,14 +140,14 @@ export class SpyderCheckLengthEquals extends SpyderCheck<string, SpyderCheckLeng
         super({ kind: 'string_length_equals', expected, abort });
     }
 
-    public run(payload: SpyderSchemaPayload<string>): void {
-        if (payload.value.length === this._def.expected) return;
+    public run(ctx: SpyderSchemaContext, value: string): void {
+        if (value.length === this._def.expected) return;
 
-        payload.issue({
+        ctx.issue({
             code: 'invalid_length',
-            message: `Expected ${this._def.expected} characters, got ${payload.value.length}`,
+            message: `Expected ${this._def.expected} characters, got ${value.length}`,
             expected: this._def.expected,
-            input: payload.value
+            input: value
         });
     }
 }
@@ -155,21 +157,21 @@ export class SpyderCheckStartsWith extends SpyderCheck<string, SpyderCheckStarts
         super({ kind: 'string_format', format: 'starts_with', prefix, caseInsensitive, abort });
     }
 
-    public run(payload: SpyderSchemaPayload<string>): void {
-        const value = this._def.caseInsensitive ? payload.value.toLowerCase() : payload.value;
+    public run(ctx: SpyderSchemaContext, value: string): void {
+        value = this._def.caseInsensitive ? value.toLowerCase() : value;
+
         const prefix = this._def.caseInsensitive
             ? this._def.prefix.toLowerCase()
             : this._def.prefix;
-
         if (value.startsWith(prefix)) return;
 
-        payload.issue({
+        ctx.issue({
             code: 'invalid_format',
             message: `Expected string to start with "${this._def.prefix}"`,
             format: 'starts_with',
             prefix: this._def.prefix,
             caseInsensitive: this._def.caseInsensitive,
-            input: payload.value
+            input: value
         });
     }
 }
@@ -179,21 +181,21 @@ export class SpyderCheckEndsWith extends SpyderCheck<string, SpyderCheckEndsWith
         super({ kind: 'string_format', format: 'ends_with', suffix, caseInsensitive, abort });
     }
 
-    public run(payload: SpyderSchemaPayload<string>): void {
-        const value = this._def.caseInsensitive ? payload.value.toLowerCase() : payload.value;
+    public run(ctx: SpyderSchemaContext, value: string): void {
+        value = this._def.caseInsensitive ? value.toLowerCase() : value;
+
         const suffix = this._def.caseInsensitive
             ? this._def.suffix.toLowerCase()
             : this._def.suffix;
-
         if (value.endsWith(suffix)) return;
 
-        payload.issue({
+        ctx.issue({
             code: 'invalid_format',
             message: `Expected string to end with "${this._def.suffix}"`,
             format: 'ends_with',
             suffix: this._def.suffix,
             caseInsensitive: this._def.caseInsensitive,
-            input: payload.value
+            input: value
         });
     }
 }
@@ -203,21 +205,21 @@ export class SpyderCheckIncludes extends SpyderCheck<string, SpyderCheckIncludes
         super({ kind: 'string_format', format: 'includes', includes, caseInsensitive, abort });
     }
 
-    public run(payload: SpyderSchemaPayload<string>): void {
-        const value = this._def.caseInsensitive ? payload.value.toLowerCase() : payload.value;
+    public run(ctx: SpyderSchemaContext, value: string): void {
+        value = this._def.caseInsensitive ? value.toLowerCase() : value;
         const includes = this._def.caseInsensitive
             ? this._def.includes.toLowerCase()
             : this._def.includes;
 
         if (value.includes(includes)) return;
 
-        payload.issue({
+        ctx.issue({
             code: 'invalid_format',
             message: `Expected string to include "${this._def.includes}"`,
             format: 'includes',
             includes: this._def.includes,
             caseInsensitive: this._def.caseInsensitive,
-            input: payload.value
+            input: value
         });
     }
 }
@@ -230,14 +232,14 @@ export class SpyderCheckLowerCase extends SpyderCheck<
         super({ kind: 'string_format', format: 'lowercase', abort });
     }
 
-    public run(payload: SpyderSchemaPayload<string>): void {
-        if (util.makeRegexTest('lowercase', payload.value)) return;
+    public run(ctx: SpyderSchemaContext, value: string): void {
+        if (util.makeRegexTest('lowercase', value)) return;
 
-        payload.issue({
+        ctx.issue({
             code: 'invalid_format',
-            message: `Expected only lower case characters, got "${payload.value}"`,
+            message: `Expected only lower case characters, got "${value}"`,
             format: 'lowercase',
-            input: payload.value
+            input: value
         });
     }
 }
@@ -250,14 +252,14 @@ export class SpyderCheckUpperCase extends SpyderCheck<
         super({ kind: 'string_format', format: 'uppercase', abort });
     }
 
-    public run(payload: SpyderSchemaPayload<string>): void {
-        if (util.makeRegexTest('uppercase', payload.value)) return;
+    public run(ctx: SpyderSchemaContext, value: string): void {
+        if (util.makeRegexTest('uppercase', value)) return;
 
-        payload.issue({
+        ctx.issue({
             code: 'invalid_format',
-            message: `Expected only upper case characters, got "${payload.value}"`,
+            message: `Expected only upper case characters, got "${value}"`,
             format: 'uppercase',
-            input: payload.value
+            input: value
         });
     }
 }
@@ -267,15 +269,15 @@ export class SpyderCheckRegex extends SpyderCheck<string, SpyderCheckRegexDef> {
         super({ kind: 'string_format', format: 'regex', pattern, abort });
     }
 
-    public run(payload: SpyderSchemaPayload<string>): void {
-        if (this._def.pattern.test(payload.value)) return;
+    public run(ctx: SpyderSchemaContext, value: string): void {
+        if (this._def.pattern.test(value)) return;
 
-        payload.issue({
+        ctx.issue({
             code: 'invalid_format',
             message: `String does not match provided pattern`,
             format: 'regex',
             pattern: String(this._def.pattern),
-            input: payload.value
+            input: value
         });
     }
 }
@@ -285,14 +287,14 @@ export class SpyderCheckUrl extends SpyderCheck<string, SpyderCheckStringFormatD
         super({ kind: 'string_format', format: 'url', abort });
     }
 
-    public run(payload: SpyderSchemaPayload<string>): void {
-        if (URL.canParse(payload.value)) return;
+    public run(ctx: SpyderSchemaContext, value: string): void {
+        if (URL.canParse(value)) return;
 
-        payload.issue({
+        ctx.issue({
             code: 'invalid_format',
-            message: `Expected a valid URL, got "${payload.value}"`,
+            message: `Expected a valid URL, got "${value}"`,
             format: 'url',
-            input: payload.value
+            input: value
         });
     }
 }
@@ -302,14 +304,14 @@ export class SpyderCheckSlug extends SpyderCheck<string, SpyderCheckStringFormat
         super({ kind: 'string_format', format: 'slug', abort });
     }
 
-    public run(payload: SpyderSchemaPayload<string>): void {
-        if (util.slugify(payload.value) === payload.value) return;
+    public run(ctx: SpyderSchemaContext, value: string): void {
+        if (util.slugify(value) === value) return;
 
-        payload.issue({
+        ctx.issue({
             code: 'invalid_format',
-            message: `Expected a valid slug, got "${payload.value}"`,
+            message: `Expected a valid slug, got "${value}"`,
             format: 'slug',
-            input: payload.value
+            input: value
         });
     }
 }

@@ -1,29 +1,28 @@
-import { type SpyderCompoundSchemaDef, SpyderCompoundSchemaBase } from './base';
-import type { SpyderSchemaPayload } from '../payload';
+import type { SpyderSchemaContext } from '../context';
 import type { SpyderSchemaBase } from '../schema';
+import { SpyderCompoundSchemaBase } from './base';
 import * as util from '../../utils';
 
 export class SpyderArraySchema<T = unknown> extends SpyderCompoundSchemaBase<
     T[],
     SpyderSchemaBase<T>
 > {
-    protected _parse(
-        def: SpyderCompoundSchemaDef<SpyderSchemaBase<T>>,
-        payload: SpyderSchemaPayload<unknown>
-    ): void {
-        if (!Array.isArray(payload.value)) {
-            payload.invalidType('array', util.getParsedType(payload.value));
+    protected _parse(ctx: SpyderSchemaContext, value: T[]): unknown {
+        if (!Array.isArray(value)) {
+            ctx.addInvalidType('array', util.getParsedType(value), value);
             return;
         }
 
-        const path: PropertyKey[] = [];
+        const result = [];
 
-        payload.value = payload.value.map((element, index) => {
-            path.push(index);
+        for (let idx = 0; idx < value.length; idx++) {
+            const childCtx = ctx.child(idx);
+            const parsed = this._def.shape.run(childCtx, value[idx]);
 
-            payload.value = element;
-            def.shape.parseWithPayload(payload);
-        });
-        payload.path = path;
+            if (childCtx.hasIssues) childCtx.issues.forEach((issue) => ctx.issueWithPath(issue));
+            else result.push(parsed);
+        }
+
+        return result;
     }
 }
