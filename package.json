@@ -74,6 +74,7 @@
         "@eslint/js": "^9.39.2",
         "@inquirer/prompts": "^8.4.3",
         "@types/node": "^25.0.10",
+        "@typescript/native-preview": "7.0.0-dev.20260605.1",
         "eslint": "^9.39.2",
         "eslint-config-prettier": "^10.1.8",
         "globals": "^17.1.0",
