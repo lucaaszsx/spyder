@@ -15,7 +15,7 @@ export class SpyderLiteralSchema extends SpyderCoerceableSchemaBase<util.Literal
 
     protected _parse(ctx: SpyderSchemaContext, value: util.Literal): util.Literal {
         if (!this.values.has(value))
-            ctx.issue({
+            ctx.addIssue({
                 code: 'invalid_value',
                 message: `Invalid value provided, expected one of: ${[...this.values].map(util.parsePrimitive).join(' | ')}`,
                 expected: [...this.values],

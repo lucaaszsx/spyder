@@ -143,7 +143,7 @@ export class SpyderCheckLengthEquals extends SpyderCheck<string, SpyderCheckLeng
     public run(ctx: SpyderSchemaContext, value: string): void {
         if (value.length === this._def.expected) return;
 
-        ctx.issue({
+        ctx.addIssue({
             code: 'invalid_length',
             message: `Expected ${this._def.expected} characters, got ${value.length}`,
             expected: this._def.expected,
@@ -165,7 +165,7 @@ export class SpyderCheckStartsWith extends SpyderCheck<string, SpyderCheckStarts
             : this._def.prefix;
         if (value.startsWith(prefix)) return;
 
-        ctx.issue({
+        ctx.addIssue({
             code: 'invalid_format',
             message: `Expected string to start with "${this._def.prefix}"`,
             format: 'starts_with',
@@ -189,7 +189,7 @@ export class SpyderCheckEndsWith extends SpyderCheck<string, SpyderCheckEndsWith
             : this._def.suffix;
         if (value.endsWith(suffix)) return;
 
-        ctx.issue({
+        ctx.addIssue({
             code: 'invalid_format',
             message: `Expected string to end with "${this._def.suffix}"`,
             format: 'ends_with',
@@ -213,7 +213,7 @@ export class SpyderCheckIncludes extends SpyderCheck<string, SpyderCheckIncludes
 
         if (value.includes(includes)) return;
 
-        ctx.issue({
+        ctx.addIssue({
             code: 'invalid_format',
             message: `Expected string to include "${this._def.includes}"`,
             format: 'includes',
@@ -235,7 +235,7 @@ export class SpyderCheckLowerCase extends SpyderCheck<
     public run(ctx: SpyderSchemaContext, value: string): void {
         if (util.makeRegexTest('lowercase', value)) return;
 
-        ctx.issue({
+        ctx.addIssue({
             code: 'invalid_format',
             message: `Expected only lower case characters, got "${value}"`,
             format: 'lowercase',
@@ -255,7 +255,7 @@ export class SpyderCheckUpperCase extends SpyderCheck<
     public run(ctx: SpyderSchemaContext, value: string): void {
         if (util.makeRegexTest('uppercase', value)) return;
 
-        ctx.issue({
+        ctx.addIssue({
             code: 'invalid_format',
             message: `Expected only upper case characters, got "${value}"`,
             format: 'uppercase',
@@ -272,7 +272,7 @@ export class SpyderCheckRegex extends SpyderCheck<string, SpyderCheckRegexDef> {
     public run(ctx: SpyderSchemaContext, value: string): void {
         if (this._def.pattern.test(value)) return;
 
-        ctx.issue({
+        ctx.addIssue({
             code: 'invalid_format',
             message: `String does not match provided pattern`,
             format: 'regex',
@@ -290,7 +290,7 @@ export class SpyderCheckUrl extends SpyderCheck<string, SpyderCheckStringFormatD
     public run(ctx: SpyderSchemaContext, value: string): void {
         if (URL.canParse(value)) return;
 
-        ctx.issue({
+        ctx.addIssue({
             code: 'invalid_format',
             message: `Expected a valid URL, got "${value}"`,
             format: 'url',
@@ -307,7 +307,7 @@ export class SpyderCheckSlug extends SpyderCheck<string, SpyderCheckStringFormat
     public run(ctx: SpyderSchemaContext, value: string): void {
         if (util.slugify(value) === value) return;
 
-        ctx.issue({
+        ctx.addIssue({
             code: 'invalid_format',
             message: `Expected a valid slug, got "${value}"`,
             format: 'slug',

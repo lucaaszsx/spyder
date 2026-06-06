@@ -77,7 +77,7 @@ export class SpyderCheckMultipleOf<T extends util.Numeric> extends SpyderCheck<
     public run(ctx: SpyderSchemaContext, value: T): void {
         if (value % this._def.divisor === this._def.zero) return;
 
-        ctx.issue({
+        ctx.addIssue({
             code: 'not_multiple_of',
             message: `Provided number is not a multiple of ${util.parsePrimitive(this._def.divisor)}`,
             divisor: this._def.divisor,
@@ -94,7 +94,7 @@ export class SpyderCheckFinite extends SpyderCheck<number, SpyderCheckFiniteDef>
     public run(ctx: SpyderSchemaContext, value: number): void {
         if (Number.isFinite(value)) return;
 
-        ctx.issue({
+        ctx.addIssue({
             code: 'not_finite',
             message: 'Provided value is not a finite number',
             input: value
