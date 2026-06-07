@@ -17,10 +17,9 @@ export class SpyderArraySchema<T = unknown> extends SpyderCompoundSchemaBase<
 
         for (let idx = 0; idx < value.length; idx++) {
             const childCtx = ctx.child(idx);
-            const parsed = this._def.shape.run(childCtx, value[idx]);
+            result[idx] = this._def.shape.run(childCtx, value[idx]);
 
             if (childCtx.hasIssues) ctx.merge(childCtx);
-            else result.push(parsed);
         }
 
         return result;
