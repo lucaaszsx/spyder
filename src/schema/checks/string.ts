@@ -80,11 +80,12 @@ export class SpyderCheckMinLength extends SpyderCheck<string, SpyderCheckMinLeng
         if (inclusive ? len >= minimum : len > minimum) return;
 
         ctx.addTooSmall(
-            ({ comparator, minimum, input }) =>
-                `Expected ${comparator} ${minimum} characters, got ${input}`,
-            len,
+            ({ comparator, minimum, received }) =>
+                `Expected ${comparator} ${minimum} characters, got ${received}`,
+            value,
             minimum,
-            inclusive
+            inclusive,
+            len
         );
     }
 }
@@ -100,11 +101,12 @@ export class SpyderCheckMaxLength extends SpyderCheck<string, SpyderCheckMaxLeng
         if (inclusive ? len <= maximum : len < maximum) return;
 
         ctx.addTooBig(
-            ({ comparator, maximum, input }) =>
-                `Expected ${comparator} ${maximum} characters, got ${input}`,
-            len,
+            ({ comparator, maximum, received }) =>
+                `Expected ${comparator} ${maximum} characters, got ${received}`,
+            value,
             maximum,
-            inclusive
+            inclusive,
+            len
         );
     }
 }

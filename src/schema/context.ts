@@ -42,17 +42,18 @@ export class SpyderSchemaContext {
     }
 
     public addTooSmall(
-        message: (params: { comparator: string; minimum: string; input: string }) => string,
+        message: (params: { comparator: string; minimum: string; received: string }) => string,
         input: unknown,
         minimum: util.Numeric,
-        inclusive: boolean
+        inclusive: boolean,
+        received?: number
     ): void {
         this.addIssue({
             code: 'too_small',
             message: message({
                 comparator: inclusive ? 'at least' : 'more than',
                 minimum: util.parsePrimitive(minimum),
-                input: util.parsePrimitive(input)
+                received: util.parsePrimitive(received ?? input)
             }),
             minimum,
             inclusive,
@@ -61,17 +62,18 @@ export class SpyderSchemaContext {
     }
 
     public addTooBig(
-        message: (params: { comparator: string; maximum: string; input: string }) => string,
+        message: (params: { comparator: string; maximum: string; received: string }) => string,
         input: unknown,
         maximum: util.Numeric,
-        inclusive: boolean
+        inclusive: boolean,
+        received?: number
     ): void {
         this.addIssue({
             code: 'too_big',
             message: message({
                 comparator: inclusive ? 'at most' : 'less than',
                 maximum: util.parsePrimitive(maximum),
-                input: util.parsePrimitive(input)
+                received: util.parsePrimitive(received ?? input)
             }),
             maximum,
             inclusive,

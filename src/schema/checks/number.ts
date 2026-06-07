@@ -37,7 +37,8 @@ export class SpyderCheckMinValue<T extends util.Numeric> extends SpyderCheck<
         if (inclusive ? value >= minimum : value > minimum) return;
 
         ctx.addTooSmall(
-            ({ comparator, minimum, input }) => `Expected ${comparator} ${minimum}, got ${input}`,
+            ({ comparator, minimum, received }) =>
+                `Expected ${comparator} ${minimum}, got ${received}`,
             value,
             minimum,
             inclusive
@@ -58,7 +59,8 @@ export class SpyderCheckMaxValue<T extends util.Numeric> extends SpyderCheck<
         if (inclusive ? value <= maximum : value < maximum) return;
 
         ctx.addTooBig(
-            ({ comparator, maximum, input }) => `Expected ${comparator} ${maximum}, got ${input}`,
+            ({ comparator, maximum, received }) =>
+                `Expected ${comparator} ${maximum}, got ${received}`,
             value,
             maximum,
             inclusive
